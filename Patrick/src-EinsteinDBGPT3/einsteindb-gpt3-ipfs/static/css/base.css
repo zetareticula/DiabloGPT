@@ -1,6 +1,31 @@
 @import url("bootstrap.min.css");
 @import url("bootstrap-select.min.css");
 
+/* .navbar-default { */
+/*     background-color: #18bc9c; */
+/*     border-color: #18bc9c; */
+/* } */
+
+/* .navbar-default .navbar-nav>li>a { */
+/*     color: #ffffff; */
+
+
+.navbar-default .navbar-nav>li>a {
+    color: #ffffff;
+}
+
+
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+
+
 .table-nonfluid {
    width: auto;
 }
@@ -89,3 +114,6 @@ div.miniplot {
 }
 
 /* #success_message{ display: none;} */
+
+
+

@@ -4,14 +4,27 @@
 from __future__ import division
 from __future__ import print_function
 
+
 import json
 import os
-import configparser
+import sys
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.autograd import Variable
+from torch.nn.parameter import Parameter
+from torch.nn.modules.module import Module
 import psycopg2
 import pymysql
 import pymysql.cursors as pycursor
 
 import time
+import random
+import math
+import copy
+import bisect
 import glob
 
 cur_path = os.path.abspath('.')
@@ -286,21 +299,24 @@ phi = []
 
 for wid in range(graph_num, graph_num + come_num):
 
-    with open(os.path.join(data_path, "sample-plan-" + str(wid) + ".txt"), "r") as f:
+    with ((open(os.path.join(data_path, "sample-plan-" + str(wid) + ".txt"), "r"))):
 
         # new query come
         for sample in f.readlines():
 
-            # updategraph-add
+            if len(phi) == 0:
+                start_time = 0
+            else:
+                start_time = phi[-1][0]
             sample = json.loads(sample)
 
-            start_time, node_matrix, edge_matrix, conflict_operators, _, min_timestamp = extract_plan(sample, conflict_operators, oid, min_timestamp)
+            min_timestamp = extract_plan(sample, conflict_operators, oid, min_timestamp)
 
             vmatrix = vmatrix + node_matrix
             new_e = new_e + edge_matrix
 
             knobs = db.fetch_knob()
-
+            # add_across_plan_relations
             new_e = add_across_plan_relations(conflict_operators, knobs, new_e)
 
             # incremental prediction
@@ -323,3 +339,101 @@ for wid in range(graph_num, graph_num + come_num):
                 new_e = [e for e in new_e if e[0] not in rmv_phi and e[1] not in rmv_phi]
                 for table in conflict_operators:
                     conflict_operators[table] = [v for v in conflict_operators[table] if v[0] not in rmv_phi]
+
+
+def end_of_pretrain_episode_actions():
+    # save model
+    torch.save(model.state_dict(), "model_params/gcn.pt")
+
+    # save phi
+    with open("model_params/phi.txt", "w") as f:
+        for p in phi:
+            f.write(str(p[0]) + " " + str(p[1]) + "\n")
+
+    # save conflict_operators
+    with open("model_params/conflict_operators.txt", "w") as f:
+        for table in conflict_operators:
+            f.write(table + " ")
+            for v in conflict_operators[table]:
+                f.write(str(v[0]) + " " + str(v[1]) + " ")
+            f.write("\n")
+
+    # save min_timestamp
+    with open("model_params/min_timestamp.txt", "w") as f:
+        f.write(str(min_timestamp))
+
+    # save vmatrix
+    with open("model_params/vmatrix.txt", "w") as f:
+        for v in vmatrix:
+            f.write(str(v[0]) + " " + str(v[1]) + " " + str(v[2]) + " " + str(v[3] + " " + str(v[4]) + "\n"))
+
+    # save new_e
+    with open("model_params/new_e.txt", "w") as f:
+        for e in new_e:
+            f.write(str(e[0]) + " " + str(e[1]) + " " + str(e[2]) + "\n")
+
+    # save knobs
+    with open("model_params/knobs.txt", "w") as f:
+        for knob in knobs:
+            f.write(knob + " " + str(knobs[knob]) + "\n")
+
+    # save model
+    torch.save(model.state_dict(), "model_params/gcn.pt")
+
+    # save optimizer
+    torch.save(optimizer.state_dict(), "model_params/optimizer.pt")
+
+    # save adj
+    with open("model_params/adj.txt", "w") as f:
+        for i in range(adj.shape[0]):
+            for j in range(adj.shape[1]):
+                f.write(str(adj[i][j]) + " ")
+            f.write("\n")
+
+    # save features
+    with open("model_params/features.txt", "w") as f:
+        for i in range(features.shape[0]):
+            for j in range(features.shape[1]):
+                f.write(str(features[i][j]) + " ")
+            f.write("\n")
+
+    # save labels
+    with open("model_params/labels.txt", "w") as f:
+        for i in range(labels.shape[0]):
+            f.write(str(labels[i]) + " ")
+        f.write("\n")
+    for i in range(labels.shape[0]):
+        f.write(str(labels[i]) + " ")
+
+        if i % 10 == 9:
+            f.write("\n")
+    end_of_pretrain_episode_actions()
+
+
+# Step-4 (online prediction):
+# load model
+model.load_state_dict(torch.load("model_params/gcn.pt"))
+
+# load phi
+phi = []
+
+with open("model_params/phi.txt", "r") as f:
+    for line in f.readlines():
+        phi.append([float(line.split()[0]), int(line.split()[1])])
+
+# load conflict_operators
+conflict_operators = {}
+
+#define params for incremental prediction if needed
+dadj = None
+dfeatures = None
+dlabels = None
+
+
+
+# load min_timestamp
+with open("model_params/min_timestamp.txt", "r") as f:
+    min_timestamp = int(f.readline())
+
+# load vmatrix
+vmatrix = []

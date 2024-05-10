@@ -2,40 +2,33 @@ package diablogpt
 
 import (
 	"database/sql"
-_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx"
-	"github.com/pingcap/log"
-
-
-
-
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx"`
-	"github.com/pingcap/log"
-	"github.com/pingcap/log/zap"
-	"go.uber.org/zap"
-	  "github.com/pingcap/log"
-	 "github.com/pingcap/log/zap"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"github.com/jmoiron/sqlx"
-	"github.com/pingcap/log"
-
-
 )
-
 
 type TuneServer struct {
 	conn *sql.DB
+
+
+}
+
+
+type Task struct {
+	Id         int64  `json:"id"`
+	InstanceId string `json:"instance_id"`
+	ClusterId  int64  `json:"cluster_id"`
+	Host       string `json:"host"`
+	Port       int64  `json:"port"`
+	User       string `json:"user"`
+	Password   string `json:"password"`
+	MaxMem     int64  `json:"max_mem"`
+	MaxDisk    int64  `json:"max_disk"`
+
 }
 
 
 
 
-
 const (
-
-
 	TB_TASK       = "tb_task"
 	TB_TASK_RESULT = "tb_task_result"
 )

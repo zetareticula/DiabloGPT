@@ -1,5 +1,16 @@
 package diablogpt
 
+import (
+	"bytes"
+	"database/sql/driver"
+	"errors"
+	"fmt"
+	"os/exec"
+	"strings"
+)
+
+type string = string // string is a type alias for string
+
 const (
 	// ErrNeedRestart is the error that need restart
 	ErrNeedRestart     = errors.New("need restart")
@@ -10,10 +21,8 @@ const (
 	ER_TUNE_FAILED
 	ER_INVALID_PARAM
 
-	TB_TASK        string = "tb_task"
-	TB_TASK_RESULT string = "tb_task_result"
-	TB_MYSQL_INST  string = "tb_mysql_inst"
-	TB_MODELS      string = "tb_models"
+	TB_MYSQL_INST string = "tb_mysql_inst"
+	TB_MODELS     string = "tb_models"
 )
 
 var (

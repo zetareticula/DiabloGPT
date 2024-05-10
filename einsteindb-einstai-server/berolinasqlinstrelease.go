@@ -8,7 +8,6 @@ import (
 type TuneServer struct {
 	conn *sql.DB
 }
-
 type BerolinaSQLInst struct {
 	InstId          int64  `json:inst_id`
 	InstanceId      string `json:instance_id`
