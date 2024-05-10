@@ -227,3 +227,5 @@ kde = KDE(samples=sample, num_attributes=num_attributes)
 kde.train(train_predicates, train_cardinalities, total_card, batch_size, num_epochs)
 kde.test(test_predicates, test_cardinalities, total_card)
     '''
+
+

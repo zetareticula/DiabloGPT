@@ -1,5 +1,14 @@
 import os
 import base
+import itertools
+import numpy as np
+import random
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+
+
 
 
 class Metacauset_enumsupport:
@@ -220,4 +229,36 @@ if __name__ == '__main__':
     # a.get_data(refresh=True)
 
 
+class GenSqlEnv:
+    def __init__(self, edbname, target_cardinality):
+        self.edbname = edbname
+        self.target_cardinality = target_cardinality
+        self.metacauset_enumsupport = Metacauset_enumsupport(edbname, target_cardinality)
+        self.sample_data = self.metacauset_enumsupport.get_data()
+        self.schema = base.get_table_structure(edbname)
+        print('GenSqlEnv init')
+
+    def gen_sql(self):
+        sql = 'select * from '
+        table_name = 'orders'
+        sql += table_name
+        sql += ' where '
+        field = 'o_orderkey'
+        sql += field
+        sql += ' in '
+        sql += str(self.sample_data[table_name][field])
+        print(sql)
+        return sql
+
+    def gen_sql2(self):
+        sql = 'select * from '
+        table_name = 'orders'
+        sql += table_name
+        sql += ' where '
+        field = 'o_orderkey'
+        sql += field
+        sql += ' in '
+        sql += str(self.sample_data[table_name][field])
+        print(sql)
+        return sql
 

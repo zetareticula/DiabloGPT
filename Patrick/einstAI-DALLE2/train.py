@@ -3,8 +3,19 @@
 Train the model
 """
 
+import random
+import time
+from itertools import count
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+import numpy as np
 import os
 import sys
+
+from legacy import xrange
+
 import utils
 import pickle
 import argparse
@@ -12,6 +23,11 @@ sys.path.append('../')
 import models
 import numpy as np
 import environment
+
+
+
+
+
 
 
 def generate_ricci(causet_action, method):

@@ -16,6 +16,16 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.preprocessing import OneHotEncoder
 
+# from sklearn.preprocessing import Imputer
+# from sklearn.preprocessing import LabelEncoder
+# from sklearn.preprocessing import LabelBinarizer
+# from sklearn.preprocessing import MultiLabelBinarizer
+# from sklearn.preprocessing import OrdinalEncoder
+
+
+# from sklearn.preprocessing import PolynomialFeatures
+# from sklearn.preprocessing import FunctionTransformer
+
 
 def chi2_selection(X, y, k=10):
     """
@@ -106,6 +116,10 @@ def power_transformer(X):
     return X_new
 
 
+
+
+
+
 def normalizer(X):
     """
     Normalize samples individually to unit norm.
@@ -137,30 +151,21 @@ for i in range(1, 11):
         continue
     continue
 
+
 X_new = min_max_scaler(X)
+
 print(X_new.shape)
+for i in range(0, 10):
+    print(X_new[:, i])
+    continue
+
+print(X_new.shape)
+
 for i in range(0, 10):
         X = pd.get_dummies(df2[i])
         print(X.shape)
         continue
-        # X=X.fillna(0)
-        # y=y.fillna(0)
-        # X_new = chi2_selection(X, y, k=10)
-        # print(X_new.shape)
-        # for j in range(0, 10):
-        #     print(X_new[:, j])
-        #     continue
-        # continue
-
-        # X_new = min_max_scaler(X)
-        # print(X_new.shape)
-        # for j in range(0, 10):
-        #     print(X_new[:, j])
-        #     continue
-        # continue
-
-
-        scaler = MinMaxScaler()
+        X_new = standard_scaler(X)
         X_new = scaler.fit_transform(X)
         print(X_new.shape)
         str_score = str(np.sum(X_new))
@@ -174,3 +179,26 @@ for i in range(0, 10):
         # print(str_write)
         f2.write(str_write)
         print(i, '&', j, 'chi2 is:', np.sum(sk.scores_), '  lenx:', str_len_x, 'leny:', str_len_y, '  crit0.99:', crit)
+
+
+        # X_new = standard_scaler(X)
+        # print(X_new.shape)
+        # for j in range(0, 10):
+
+
+        if (len(X_new) > 0):
+            print(X_new[:, j])
+            continue
+
+            # X_new = robust_scaler(X)
+        for j in range(0, 10):
+            print(X_new[:, j])
+            continue
+
+
+
+
+
+
+
+

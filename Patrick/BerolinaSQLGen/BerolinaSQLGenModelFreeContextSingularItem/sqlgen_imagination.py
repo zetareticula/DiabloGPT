@@ -172,13 +172,59 @@ class BerolinaSQLGenReplayMemoryWithBoltzmannNormalizer(object):
         def update_temperature(self):
             self.temperature = max(self.temperature * self.temperature_decay, self.temperature_min)
 
+## The following code snippet is from the same file as the above snippet
+class BerolinaSQLGenReplayMemoryWithBoltzmannNormalizerX(object):
+
         def sample_with_boltzmann_normalizer(self, batch_size):
-            # sample with boltzmann normalizer
-            # print("sample_with_boltzmann_normalizer")
-            # print("self.memory: ", self.memory)
-            # print("self.memory[0]: ", self.memory[0])
-            # print("self.memory[0].reward: ", self.memory[0].reward)
-            # print("self.memory[0].reward: ", self.memory[0].reward)
+            memory = self.memory
+            temperature = self.temperature
+            transitions = []
+            for _ in range(batch_size):
+                transition = random.choice(memory)
+                transitions.append(transition)
+            return transitions
+
+        def sample_with_boltzmann_normalizer(self, batch_size):
+            memory = self.memory
+            temperature = self.temperature
+            transitions = []
+            for _ in range(batch_size):
+                transition = random.choice(memory)
+                transitions.append(transition)
+            return transitions
+
+        def sample_with_boltzmann_normalizer(self, batch_size):
+            memory = self.memory
+            temperature = self.temperature
+            transitions = []
+            for _ in range(batch_size):
+                transition = random.choice(memory)
+                transitions.append(transition)
+            return transitions
+
+        def sample_with_boltzmann_normalizer(self, batch_size):
+            memory = self.memory
+            temperature = self.temperature
+            transitions = []
+            for _ in range(batch_size):
+                transition = random.choice(memory)
+                transitions.append(transition)
+            return transitions
+
+
+
+
+
+
+
+# Path: Patrick/BerolinaSQLGen/BerolinaSQLGenModelFreeContextSingularItem/sqlgen_imagination.py
+
+
+
+
+
+
+
 
 
 

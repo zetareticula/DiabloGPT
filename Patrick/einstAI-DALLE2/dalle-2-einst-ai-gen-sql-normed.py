@@ -407,6 +407,8 @@ elif opt.phase == 'train_read_write':
     model.load_model(opt.params)
     train()
     print('Training Done')
+
+
     
 elif opt.phase == 'test_read_write':
     assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
@@ -418,17 +420,31 @@ elif opt.phase == 'test_read_write':
             if 10 != 0:
                 pass
             else:
-                print(f"[Epoch {epoch}][Step {i}] Loss: {loss}")
-                loss = 0
                 model.save_model('sl_model_params/{}_{}.pkl'.format(expr_name, epoch))
-
-            action = get_action(state)
-            next_state, reward, done, info = env.step(action)
-            state = next_state
-            if done:
-                break
-
+    print('Testing Done')
+        
+elif opt.phase == 'train_read_write':
+    assert len(opt.params) != 0, "PARAMS should be specified when training DDPG einstAIActor"
+    
+    model.load_model(opt.params)
+    train()
+    print('Training Done')
+    
+elif opt.phase == 'test_read_write':
+    assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
+    model.load_model(opt.params)
+    env = ReadWriteEnv(tconfig)
+    state = env.reset()
+    action = get_action(state)
+    next_state, reward, done, info = env.step(action)
+    state = next_state
+    
+    
+    if done:
+        break
     env.close()
+    
+    
     print('Testing Done')
 
 
@@ -469,42 +485,176 @@ elif opt.phase == 'test_read_write':
 
     model.save_model('sl_model_params/{}_{}.pkl'.format(expr_name, epoch))
 
-    
+#
+#
+#     assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
+#     model.load_model(opt.params)
+# env = ReadEnv(tconfig)
+# state = env.reset()
 
-    assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
-    model.load_model(opt.params)
-env = ReadEnv(tconfig)
-state = env.reset()
-
+# for i in range(tconfig['num_steps']):
 
     # We save the model every 10 epochs
     # we do this so Dall-e can be used to generate images
     # while the model is still training
-        print("[Epoch {}] Test Loss: {}".format(epoch, test_loss))
-        model.save_einstAIActor('sl_model_params/sl_train_einstAIActor_{}.pth'.format(epoch))
 
+    if i % 10 == 0:
+        model.save_model('sl_model_params/{}_{}.pkl'.format(expr_name, epoch))
+
+    action = get_action(state)
+    next_state, reward, done, info = env.step(action)
+    state = next_state
+    if done:
+        break
+
+env.close()
+
+print('Testing Done')
+
+
+if __name__ == '__main__':
+    if opt.phase == 'train':
+        if opt.params == '':
+            model = models.NARU(tconfig)
+        else:
+            model = models.NARU(tconfig, opt.params)
+        model.train()
+
+    elif opt.phase == 'test':
+        model = models.NARU(tconfig, opt.params)
+        model.test()
+
+    else:
+        raise Exception('Wrong phase')
+
+    if opt.phase == 'train':
+        if opt.params == '':
+            model = models.NARU(tconfig)
+        else:
+            model = models.NARU(tconfig, opt.params)
+        model.train()
+
+    else:
+        raise Exception('Wrong phase')
+
+    if opt.phase == 'train':
+        if opt.params == '':
+            model = models.NARU(tconfig)
+        else:
+            model = models.NARU(tconfig, opt.params)
+        model.train()
+    else:
+        raise Exception('Wrong phase')
+    print("[Epoch {}] Test Loss: {}".format(epoch, test_loss))
+    
+    model.save_einstAIActor('sl_model_params/sl_train_einstAIActor_{}.pth'.format(epoch))
+    print('Model saved')
     print('Training Done')
 
 
-
+    print('Training Done')
     assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
     model.load_einstAIActor(opt.params)
     env = ReadEnv(tconfig)
-    # Create Environment
-    if opt.workload == 'read':
-        env = ReadEnv(tconfig)
-    elif opt.workload == 'write':
-        env = WriteEnv(tconfig)
-    elif opt.workload == 'readwrite':
-        env = ReadWriteEnv(tconfig)
-    else:
-        raise Exception('Wrong workload type')
     state = env.reset()
     for i in range(tconfig['num_steps']):
         action = get_action(state)
         next_state, reward, done, info = env.step(action)
         state = next_state
         if done:
+            break
+    env.close()
+    print('Testing Done')
+
+    assert len(opt.params) != 0, "PARAMS should be specified when training DDPG einstAIActor"
+    model.load_einstAIActor(opt.params)
+    train()
+    print('Training Done')
+
+
+
+    assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
+    model.load_einstAIActor(opt.params)
+    env = WriteEnv(tconfig)
+    state = env.reset()
+    for i in range(tconfig['num_steps']):
+        action = get_action(state)
+        next_state, reward, done, info = env.step(action)
+        state = next_state
+        if done:
+            break
+    env.close()
+    print('Testing Done')
+
+
+    assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
+    model.load_einstAIActor(opt.params)
+    env = ReadEnv(tconfig)
+    state = env.reset()
+    for i in range(tconfig['num_steps']):
+        action = get_action(state)
+        next_state, reward, done, info = env.step(action)
+        state = next_state
+        if done:
+            break
+    env.close()
+    print('Testing Done')
+
+
+
+    assert len(opt.params) != 0, "PARAMS should be specified when training DDPG einstAIActor"
+    model.load_einstAIActor(opt.params)
+    train()
+    print('Training Done')
+
+
+
+
+
+assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
+model.load_einstAIActor(opt.params)
+env = ReadEnv(tconfig)
+# Create Environment
+if opt.workload == 'read':
+    env = ReadEnv(tconfig)
+        
+elif opt.workload == 'write':
+
+    env = WriteEnv(tconfig)
+elif opt.workload == 'readwrite':
+    env = ReadWriteEnv(tconfig)
+else:
+    raise Exception('Wrong workload type')
+    state = env.reset()
+for i in range(tconfig['num_steps']):
+        action = get_action(state)
+
+        for i in range(tconfig['num_steps']):
+            action = get_action(state)
+            next_state, reward, done, info = env.step(action)
+            state = next_state
+            if done:
+                break
+        next_state, reward, done, info = env.step(action)
+        state = next_state
+        if done:
+            # len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
+            model.load_einstAIActor(opt.params)
+            env = ReadWriteEnv(tconfig)
+            break
+
+for i in range(tconfig['num_steps']):
+    action = get_action(state)
+    next_state, reward, done, info = env.step(action)
+    state = next_state
+
+    for i in range(tconfig['num_steps']):
+        action = get_action(state)
+        next_state, reward, done, info = env.step(action)
+        if done:
+            var = len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
+            model.load_einstAIActor(opt.params)
+            env = ReadWriteEnv(tconfig)
             break
     env.close()
     print('Testing Done')

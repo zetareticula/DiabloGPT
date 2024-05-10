@@ -77,7 +77,11 @@ class ENV(object):
         else:
             return 0,False
 
-
+    def reward_new(self):
+        if self.sel.total+1 == len(self.sel.from_table_list):
+            return self.sel.plan2Cost(), True
+        else:
+            return 0,False
 
 Transition = namedtuple('Transition',
                         ('env', 'next_value', 'this_value'))

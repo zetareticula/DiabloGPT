@@ -4,10 +4,28 @@
 # # Path: DiabloGPT/OUCausetFlowProcess/LatencyTuning.py
 
 
+import numpy as np
+import pandas as pd
+import os
+import random
+import time
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torch.autograd import Variable
+
+
+
+
+
+
 
 class DDPGModel:
     def DDPG(n_states, n_actions, opt, supervised):
         assert isinstance(n_states, object)
+        assert isinstance(opt, object)
+        assert isinstance(supervised, object)
         model = DDPGModel(  opt, supervised)
         return model
 
@@ -16,6 +34,358 @@ class DDPGModel:
         model = DDPGModel(n_states, n_actions, opt, supervised)
 
         return model
+
+
+    def __init__(self, opt, supervised):
+        self.opt = opt
+        self.supervised = supervised
+        self.model = nn.Sequential(
+            nn.Linear(self.opt.state_dim, 400),
+            nn.ReLU(),
+            nn.Linear(400, 300),
+            nn.ReLU(),
+            nn.Linear(300, self.opt.action_dim),
+            nn.Tanh()
+        )
+        self.target_model = nn.Sequential(
+            nn.Linear(self.opt.state_dim, 400),
+            nn.ReLU(),
+            nn.Linear(400, 300),
+            nn.ReLU(),
+            nn.Linear(300, self.opt.action_dim),
+            nn.Tanh()
+        )
+        self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+        self.loss = nn.MSELoss()
+
+        if self.supervised:
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+        else:
+
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+        if self.supervised:
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+        else:
+
+                self.model = nn.Sequential(
+                    nn.Linear(self.opt.state_dim, 400),
+                    nn.ReLU(),
+                    nn.Linear(400, 300),
+                    nn.ReLU(),
+                    nn.Linear(300, self.opt.action_dim),
+                    nn.Tanh()
+                )
+                self.target_model = nn.Sequential(
+                    nn.Linear(self.opt.state_dim, 400),
+                    nn.ReLU(),
+                    nn.Linear(400, 300),
+                    nn.ReLU(),
+                    nn.Linear(300, self.opt.action_dim),
+                    nn.Tanh()
+                )
+                self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+                self.loss = nn.MSELoss()
+
+        if self.supervised:
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+        else:
+
+                        self.model = nn.Sequential(
+                            nn.Linear(self.opt.state_dim, 400),
+                            nn.ReLU(),
+                            nn.Linear(400, 300),
+                            nn.ReLU(),
+                            nn.Linear(300, self.opt.action_dim),
+                            nn.Tanh()
+                        )
+                        self.target_model = nn.Sequential(
+                            nn.Linear(self.opt.state_dim, 400),
+                            nn.ReLU(),
+                            nn.Linear(400, 300),
+                            nn.ReLU(),
+                            nn.Linear(300, self.opt.action_dim),
+                            nn.Tanh()
+                        )
+                        self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+                        self.loss = nn.MSELoss()
+
+        if self.supervised:
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+        else:
+
+                                        self.model = nn.Sequential(
+                                            nn.Linear(self.opt.state_dim, 400),
+                                            nn.ReLU(),
+                                            nn.Linear(400, 300),
+                                            nn.ReLU(),
+                                            nn.Linear(300, self.opt.action_dim),
+                                            nn.Tanh()
+                                        )
+                                        self.target_model = nn.Sequential(
+                                            nn.Linear(self.opt.state_dim, 400),
+                                            nn.ReLU(),
+                                            nn.Linear(400, 300),
+                                            nn.ReLU(),
+                                            nn.Linear(300, self.opt.action_dim),
+                                            nn.Tanh()
+                                        )
+                                        self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+                                        self.loss = nn.MSELoss()
+
+        if self.supervised:
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+        else:
+
+                                                    self.model = nn.Sequential(
+                                                        nn.Linear(self.opt.state_dim, 400),
+                                                        nn.ReLU(),
+                                                        nn.Linear(400, 300),
+                                                        nn.ReLU(),
+                                                        nn.Linear(300, self.opt.action_dim),
+                                                        nn.Tanh()
+                                                    )
+                                                    self.target_model = nn.Sequential(
+                                                        nn.Linear(self.opt.state_dim, 400),
+                                                        nn.ReLU(),
+                                                        nn.Linear(400, 300),
+                                                        nn.ReLU(),
+                                                        nn.Linear(300, self.opt.action_dim),
+                                                        nn.Tanh()
+                                                    )
+                                                    self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+                                                    self.loss = nn.MSELoss()
+
+        if self.supervised:
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+
+        else:
+
+                                                                            self.model = nn.Sequential(
+                                                                                nn.Linear(self.opt.state_dim, 400),
+                                                                                nn.ReLU(),
+                                                                                nn.Linear(400, 300),
+                                                                                nn.ReLU(),
+                                                                                nn.Linear(300, self.opt.action_dim),
+                                                                                nn.Tanh()
+                                                                            )
+                                                                            self.target_model = nn.Sequential(
+                                                                                nn.Linear(self.opt.state_dim, 400),
+                                                                                nn.ReLU(),
+                                                                                nn.Linear(400, 300),
+                                                                                nn.ReLU(),
+                                                                                nn.Linear(300, self.opt.action_dim),
+                                                                                nn.Tanh()
+                                                                            )
+                                                                            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+                                                                            self.loss = nn.MSELoss()
+
+        if self.supervised:
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+        else:
+
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+        if self.supervised:
+            self.model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.target_model = nn.Sequential(
+                nn.Linear(self.opt.state_dim, 400),
+                nn.ReLU(),
+                nn.Linear(400, 300),
+                nn.ReLU(),
+                nn.Linear(300, self.opt.action_dim),
+                nn.Tanh()
+            )
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+            self.loss = nn.MSELoss()
+
+        else:
+
+                self.model = nn.Sequential(
+                    nn.Linear(self.opt.state_dim, 400),
+                    nn.ReLU(),
+                    nn.Linear(400, 300),
+                    nn.ReLU(),
+                    nn.Linear(300, self.opt.action_dim),
+                    nn.Tanh()
+                )
+                self.target_model = nn.Sequential(
+                    nn.Linear(self.opt.state_dim, 400),
+                    nn.ReLU(),
+                    nn.Linear(400, 300),
+                    nn.ReLU(),
+                    nn.Linear(300, self.opt.action_dim),
+                    nn.Tanh()
+                )
+                self.optimizer = optim.Adam(self.model.parameters(), lr=self.opt.lr)
+                self.loss = nn.MSELoss()
 
 def create_single_script_generate(file_path, database, table_name):
     sqls = []
@@ -39,8 +409,21 @@ if __name__ == '__main__':
     from os.path import isfile, join
 
 
-    def create_joins_script(join_sample_dir, database):
-
+#     def create_joins_script(join_sample_dir, database, join_sample=None, f=None, _dir=None):
+#         join_files = [f for f in listdir(join_sample_dir) if isfile(join_sample
+# _dir + '/' + f) and f.endswith('.csv')]  # only files that end with .csv
+#
+#
+#
+#
+#
+#         if join_sample:
+#             join_files = [join_sample]
+#
+#
+#         for join_file in join_files:
+#             table_name = join_file.split('.')[0]
+#             create_single_script_generate(join_sample_dir + '/' + join_file, database, table_name)
 
 
     parser = argparse.ArgumentParser(description='Create Join Samples.')
@@ -51,4 +434,4 @@ if __name__ == '__main__':
     create_single_script_generate(args.path, args.database, args.table_name)
 
 
-
+# Path: DiabloGPT/OUCausetFlowProcess/LatencyTuning.py

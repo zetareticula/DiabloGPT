@@ -5,9 +5,19 @@ from enum import Enum
 from time import perf_counter
 
 import numpy as np
-from ensemble_compilation.physical_db import DBConnection
-from ensemble_compilation.spn_ensemble import read_ensemble
-from evaluation.utils import parse_query, save_csv
+
+# from aqp.query_parser import parse_query
+# from aqp.read_ensemble import read_ensemble
+# from aqp.utils import save_csv
+# from db.db_connection import DBConnection
+
+from aml.aqp.query_parser import parse_query
+from aml.aqp.read_ensemble import read_ensemble
+
+
+
+
+
 
 logger = logging.getLogger(__name__)
 

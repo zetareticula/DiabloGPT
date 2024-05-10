@@ -1,18 +1,42 @@
 package diablogpt
 
 import (
+
+	"database/sql"
 	"encoding/json"
 	"net/http"
-	"strconv"
+	"strconv" //CHANGELOG:  We have to use the same task_id to update the task
+	"github.com/go-sql-driver/mysql
+	"github.com/pingcap/errors"
+	"github.com/pingcap/log"
+	"github.com/pingcap/tidb/errno"
+
+
+
 )
 
+
 //CHANGELOG:  We have to use the same task_id to update the task
+
+// ProtCommonRsp is a struct that contains the response to a request
+// Errno is the error number
+// Error is the error message
 
 type ProtCommonRsp struct {
 	Errno int         `json:"errno"`
 	Error string      `json:"error"`
 	Data  interface{} `json:"data"`
 }
+
+
+
+// SendRsp sends a response to a request
+// w is the response writer
+// data is the data to be sent
+// err is the error message
+// It returns an error
+
+
 
 func SendRsp(w http.ResponseWriter, data interface{}, err error) error {
 	var rsp ProtCommonRsp
@@ -26,9 +50,19 @@ func SendRsp(w http.ResponseWriter, data interface{}, err error) error {
 		rsp.Error = e.Error()
 		rsp.Data = data
 	} else {
-		rsp.Errno = ER_OUTER
+		ErOuter := rsp = commonRsp := ProtCommonRsp{
+			Errno: -1,
+			Error: "Outer error",
+			Data:  nil,
+		}
+
+
+		rsp.Errno = ErOuter
 		rsp.Error = err.Error()
+
 		rsp.Data = data
+
+
 	}
 	err2 := SendJson(w, rsp)
 	if err2 != nil {
@@ -37,6 +71,9 @@ func SendRsp(w http.ResponseWriter, data interface{}, err error) error {
 	return err2
 
 }
+
+
+
 
 func (dapp *TuneServer) HandleQueryTask(w http.ResponseWriter, r *http.Request) {
 	fields := []string{"task_id"}

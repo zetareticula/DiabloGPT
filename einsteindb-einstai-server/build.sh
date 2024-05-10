@@ -1,6 +1,15 @@
 #!/bin/sh
 
+
+# einsteindb home
+
+# shellcheck disable=SC2034
+
+
+
 PROGRAM=$(basename $0)
+# shellcheck disable=SC2046
+# shellcheck disable=SC2164
 EINSTEINDB_HOME=$(cd $(dirname $0)/..; pwd)
 EINSTEINDB_BIN=$EINSTEINDB_HOME/bin
 EINSTEINDB_LIB=$EINSTEINDB_HOME/lib
@@ -9,7 +18,8 @@ EINSTEINDB_LOGS=$EINSTEINDB_HOME/logs
 EINSTEINDB_PID=$EINSTEINDB_HOME/einsteindb.pid
 
 
-
+# foundationdb home
+# shellcheck disable=SC2034
 
 
 
@@ -44,3 +54,11 @@ if [ ! -d $EINSTEINDB_LOGS ]; then
     echo "$PROGRAM: einsteindb logs not found: $EINSTEINDB_LOGS"
     exit 1
 fi
+
+
+# check einsteindb pid
+if [ ! -f $EINSTEINDB_PID ]; then
+    echo "$PROGRAM: einsteindb pid not found: $EINSTEINDB_PID"
+    exit 1
+fi
+

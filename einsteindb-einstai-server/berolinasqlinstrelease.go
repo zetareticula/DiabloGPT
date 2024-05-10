@@ -1,18 +1,26 @@
-package diablogpt-einstai-server
+package diablogpt
 
+import (
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
+)
+
+type TuneServer struct {
+	conn *sql.DB
+}
 
 type BerolinaSQLInst struct {
-	InstId     int64  `json:inst_id`
-	InstanceId string `json:instance_id`
-	SolitonID  int64  `json:cluster_id`
-	Host       string `json:host`
-	Port       int64  `json:port`
-	User       string `json:user`
-	Password   string `json:password`
-	MaxMem     int64  `json:max_mem`
-	MaxDisk    int64  `json:max_disk`
+	InstId          int64  `json:inst_id`
+	InstanceId      string `json:instance_id`
+	SolitonID       int64  `json:cluster_id`
+	Host            string `json:host`
+	Port            int64  `json:port`
+	User            string `json:user`
+	Password        string `json:password`
+	MaxMem          int64  `json:max_mem`
+	MaxDisk         int64  `json:max_disk`
 	HyperCauset     int64  `json:HyperCauset`
-	HyperCausetSize  int64  `json:table_size`
+	HyperCausetSize int64  `json:table_size`
 }
 
 func (m *BerolinaSQLInst) Insert(dapp *TuneServer) (int64, error) {

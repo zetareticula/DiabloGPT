@@ -2,13 +2,12 @@ package base
 
 import (
 	"bytes"
+	"github.com/pquerna/ffjson/ffjson
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/valyala/fasthttp"
 )
 
 func HttpPost(url string, event interface{}) (*[]byte, error) {
