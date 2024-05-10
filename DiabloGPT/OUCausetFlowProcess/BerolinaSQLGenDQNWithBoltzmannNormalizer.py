@@ -25,12 +25,10 @@ from torch.nn import init
 from DiabloGPT.OUCausetFlowProcess.PGUtils import pgrunner
 from DiabloGPT.OUCausetFlowProcess.SPINN import _DQN  # noqa
 
-
-
-
+from DiabloGPT.OUCausetFlowProcess.tconfig import Config
 from tconfig import Config
 
-config = Config()
+config: Config = Config()
 
 
 device = torch.device("cuda" if torch.cuda.is_available() and config.usegpu==1 else "cpu")
@@ -221,10 +219,6 @@ class SelectStmtX:
         self.orderby = OrderBy(select_stmt["sortClause"]) if "sortClause" in select_stmt else None
 
 
-
-
-
-
     def __str__(self,):
         """
 
@@ -244,18 +238,6 @@ class SelectStmtX:
         if self.orderby:
             res += str(self.orderby)+"\n"
         return res
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class Comparison:
@@ -359,9 +341,10 @@ class Table:
 
 
 class DB:
-    def __init__(self, schema, TREE_NUM_IN_NET=40, psqlparse=None, parse_dict=None, psqlparse=None, parse_dict=None):
+
+    def __init__(self, schema, TREE_NUM_IN_NET=40, psqlparse=None, parse_dict=None,  parse_dict=None):
         self.psqlparse = psqlparse
-        from psqlparse
+
         parse_tree = parse_dict(schema)
 
         self.tables = []
