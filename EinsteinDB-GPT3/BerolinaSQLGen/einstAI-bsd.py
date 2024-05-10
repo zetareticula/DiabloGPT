@@ -7,9 +7,8 @@
 #   EinstAI Inc - initial API and implementation
 
 import sys
-from shlex import join
-from subprocess import Popen, PIPE
-
+# from shlex import join
+# from subprocess import Popen, PIPE
 
 import base
 import numpy as np
@@ -17,8 +16,18 @@ import self as self
 from pandas.core.interchange import buffer
 from torch.cuda import memory
 
-from treelib import Tree
-from treelib import Node
+# from treelib import Tree
+# from treelib import Node
+
+
+def get_tree(edbname):
+    tree = Tree()
+    tree.create_node('root', 'root', data=edbname)
+    return tree
+
+
+
+
 
 
 
@@ -27,6 +36,10 @@ def get_node(tree, edbname):
     if node is None:
         node = tree.create_node(edbname, edbname, parent='root')
     return node
+
+
+class Tree:
+    pass
 
 
 def get_tree(edbname):
@@ -1051,13 +1064,60 @@ def end_of_pretrain_episode_actions(final_reward, ep_steps, buffer, memory, inde
 if __name__ == '__main__':
     random_generate('tpch', '/home/lixizhang/learnSQL/cardinality/tpch/tpch_random_10000', 10000)
 
+    # prc_predata()
+    # test('tpch', 1000)
+    # pre_data('tpch', 'point', 100000, 1000)
+    # pre_data('tpch', 'range', (1000, 2000), 1000)
+
+        # test('tpch', 1000)
+    # pre_data('tpch', 'point', 100000, 1000)
+    # pre_data('tpch', 'range', (1000, 2000), 1000)
+    # test('tpch', 1000)
+    # pre_data('tpch', 'point', 100000, 1000)
+
+
+ if mtype == 'point':
+        env = GenSqlEnv(metric=metric, edbname=edbname, target_type=0)
+    elif mtype == 'range':
+        env = GenSqlEnv(metric=metric, edbname=edbname, target_type=1)
+    else:
+        print('error')
+        return
+    scount = 0
+
+    while scount < nums:
+        for i in range(1, SEQ_LENGTH):
+            candidate_action = env.observe(current_state)
+            causet_action = choose_action(candidate_action)
+            reward, done = env.step(causet_action)
+            buffer.store(current_state, causet_action, reward, ep_steps)
+            ep_steps += 1
+            current_state = causet_action
+
+            if ep_steps == SEQ_LENGTH or reward == env.bug_reward or reward < env.target_type - 0.2:
+                buffer.clear()
+
+            else:
+                end_of_pretrain_episode_actions(reward, ep_steps, buffer, memory, scount)
+                buffer.clear()
+                scount += 1
+                if scount % 100 == 0:
+                    cpath = os.path.abspath('.')
+                    tpath = cpath + '/' + edbname + '/' + env.task_name + '_predata.npy'
+                    np.save(tpath, memory)
+
+    cpath = os.path.abspath('.')
+    tpath = cpath + '/' + edbname + '/' + env.task_name + '_predata.npy'
+    np.save(tpath, memory)
+    # c = np.load(tpath)
+    # print(c)
 
 
 
 
 
-
-
+# def prc_predata():
+#     para = sys.argv
 
 
 

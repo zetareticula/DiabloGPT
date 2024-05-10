@@ -18,6 +18,7 @@ import torch
 from torch.nn import init
 from tconfig import Config
 
+
 config = Config()
 
 device = torch.device("cuda" if torch.cuda.is_available() and config.usegpu==1 else "cpu")

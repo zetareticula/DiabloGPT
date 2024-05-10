@@ -11,35 +11,10 @@
         </value>
       </option>
     </inspection_tool>
-    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
-      <option name="ignoredErrors">
-        <list>
-          <option value="N802" />
-          <option value="N806" />
-        </list>
-      </option>
-    </inspection_tool>
     <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredIdentifiers">
         <list>
-          <option value="copy" />
-          <option value="numpy" />
-          <option value="random" />
-          <option value="time" />
-          <option value="einstAI" />
-          <option value="AML.Synthetic.naru.replay_memory" />
-          <option value="src.cpp.qpsolver.cvxopt.src.python.cvxprog.*" />
-          <option value="AML.Transformers.stochastic_forager.src.cpp.qpsolver.cvxopt.src.python.cvxprog.kktsolver" />
-          <option value="AML.Synthetic.deepdb.deepdb_job_ranges.aqp_spn.code_generation.generate_code.*" />
-          <option value="AML.Synthetic.deepdb.deepdb_job_ranges.aqp_spn.custom_spflow.custom_learning.*" />
-          <option value="AML.Synthetic.deepdb.deepdb_job_ranges.rspn.algorithms.expectations.rspn" />
-          <option value="python2x3" />
-          <option value="AML.Synthetic.deepdb.deepdb_job_ranges.aqp_spn.util.bloom_filter.*" />
-          <option value="AML.Transformers.stochastic_forager.preprocessing.pattern2totalnum" />
-          <option value="bool.autocommit" />
-          <option value="bool.rollback" />
-          <option value="bool.commit" />
-          <option value="bool.begin" />
+          <option value="DiabloGPT3.MumfordGrammar.LearnedCostEstimator.src.feature_extraction.database_loader.*" />
         </list>
       </option>
     </inspection_tool>

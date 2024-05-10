@@ -13,6 +13,48 @@
 # under the License.
 
 import numpy as np
+import self as self
+import torch
+from torch.nn import init
+from tconfig import Config
+
+config = Config()
+
+
+device = torch.device("cuda" if torch.cuda.is_available() and config.usegpu==1 else "cpu")
+
+
+with open(config.schemaFile, "r") as f:
+    createSchema = "".join(f.readlines())
+
+db_info = DB(createSchema)
+
+featureSize = 128
+
+policy_net = SPINN(n_classes = 1, size = featureSize, n_words = 100,mask_size= 40*41,device=device).to(device)
+
+
+
+target_net = SPINN(n_classes = 1, size = featureSize, n_words = 100,mask_size= 40*41,device=device).to(device)
+
+
+for name, param in policy_net.named_parameters():
+    print(name,param.shape)
+    if len(param.shape)==2:
+        init.xavier_normal(param)
+    else:
+        init.uniform(param)
+
+target_net.load_state_dict(policy_net.state_dict())
+target_net.eval()
+
+
+
+
+DQN = DQN(policy_net,target_net,db_info,pgrunner,device)
+
+
+
 class Expr:
     def __init__(self, expr,list_kind = 0):
         self.expr = expr
@@ -103,7 +145,7 @@ class FromTable:
 
 class SelectStmt:
     def __init__(self, select_stmt):
-
+        self.from_table = None
 
     def getFullName(self,):
         return self.from_table["relname"]
@@ -113,6 +155,76 @@ class SelectStmt:
 
     def __str__(self,):
         return self.getFullName()+" AS "+self.getAliasName()
+
+
+class Join:
+    def __init__(self, join):
+        self.join = join
+        self.left = FromTable(join["larg"])
+        self.right = FromTable(join["rarg"])
+        self.kind = join["jointype"]
+        self.condition = Comparison(join["quals"])
+
+    def __str__(self,):
+        return str(self.left)+" "+self.kind+" JOIN "+str(self.right)+" ON "+str(self.condition)
+
+class Where:
+    def __init__(self, where):
+        self.where = where
+        self.condition = Comparison(where["quals"])
+
+    def __str__(self,):
+        return "WHERE "+str(self.condition)
+
+class GroupBy:
+    def __init__(self, groupby):
+        self.groupby = groupby
+        self.columns = [Expr(x) for x in groupby["groupby"]]
+    def __str__(self,):
+        return "GROUP BY "+", ".join([str(x) for x in self.columns])
+
+class OrderBy:
+    def __init__(self, orderby):
+        self.orderby = orderby
+        self.columns = [Expr(x) for x in orderby["sortby"]]
+    def __str__(self,):
+        return "ORDER BY "+", ".join([str(x) for x in self.columns])
+
+class SelectStmtX:
+
+        def __init__(self, select_stmt):
+            self.select_stmt = select_stmt
+        self.target_list = [TargetTable(x) for x in select_stmt["targetList"]]
+        self.from_table_list = [FromTable(x) for x in select_stmt["fromClause"]]
+        self.join_list = [Join(x) for x in select_stmt["fromClause"] if "JoinExpr" in x]
+        self.where = Where(select_stmt["whereClause"]) if "whereClause" in select_stmt else None
+        self.groupby = GroupBy(select_stmt["groupClause"]) if "groupClause" in select_stmt else None
+        self.orderby = OrderBy(select_stmt["sortClause"]) if "sortClause" in select_stmt else None
+
+    def __str__(self,):
+        res = "SELECT "
+        res += ", ".join([str(x) for x in self.target_list])
+        res += "\nFROM "
+        res += ", ".join([str(x) for x in self.from_table_list])
+        res += "\n"
+        for join in self.join_list:
+            res += str(join)+"\n"
+        if self.where:
+            res += str(self.where)+"\n"
+        if self.groupby:
+            res += str(self.groupby)+"\n"
+        if self.orderby:
+            res += str(self.orderby)+"\n"
+        return res
+
+
+
+
+
+
+
+
+
 
 
 class Comparison:
@@ -216,8 +328,9 @@ class Table:
 
 
 class DB:
-    def __init__(self, schema,TREE_NUM_IN_NET=40):
-        from psqlparse import parse_dict
+    def __init__(self, schema, TREE_NUM_IN_NET=40, psqlparse=None, parse_dict=None, psqlparse=None, parse_dict=None):
+        self.psqlparse = psqlparse
+        from psqlparse
         parse_tree = parse_dict(schema)
 
         self.tables = []

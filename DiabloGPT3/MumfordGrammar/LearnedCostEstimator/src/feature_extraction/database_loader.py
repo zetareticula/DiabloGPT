@@ -6,12 +6,38 @@ import torch
 from math import log
 from torch.nn import init
 
-from DQN import DQN, ENV
-from ImportantConfig import Config
+from DQN import DQN as DQN
+from ImportantConfig import Config as Config
 from JOBParser import DB
 from PGUtils import PGRunner
 from TreeLSTM import SPINN
 from sqlSample import sqlInfo
+
+config = Config()
+
+
+def k_fold(input_list, k, ix=0):
+    li = len(input_list)
+    kl = (li - 1) // k + 1
+    train = []
+    validate = []
+    for idx in range(li):
+
+        if idx % k == ix:
+            validate.append(input_list[idx])
+        else:
+            train.append(input_list[idx])
+    return train, validate
+
+
+def QueryLoader(QueryDir):
+    sql_list = []
+    for i in range(1, 23):
+        sql = sqlInfo(QueryDir + "query_" + str(i) + ".sql")
+        sql_list.append(sql)
+    return sql_list
+
+
 
 
 if __name__ == '__main__':

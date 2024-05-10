@@ -43,4 +43,9 @@ class Config:
         self.max_parallel_workers = 1
         self.enable_mergejoin = True
         self.enable_hashjoin = True
+
+self.use_gpu = True
+self.use_hint = True
+self.use_cost = True
+
         

@@ -4,6 +4,12 @@ import common
 import numpy as np
 
 
+
+
+
+
+
+
 def LoadDmv(filename='Vehicle__Snowmobile__and_Boat_Registrations.csv'):
     csv_file = './datasets/{}'.format(filename)
     cols = [

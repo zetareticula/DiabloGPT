@@ -1,8 +1,13 @@
 import torch
-"""
-
-"""
 import time
+import torch.cuda
+
+
+
+
+
+
+
 class data_prefetcher():
     def __init__(self, loader):
         st = time.time()

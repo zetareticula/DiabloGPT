@@ -15,6 +15,10 @@ import numpy as np
 import pandas as pd
 import torch
 import transformer
+import psycopg2
+import psycopg2.extras
+import psycopg2.errorcodes
+import psycopg2.pool
 
 OPS = {
     '>': np.greater,
@@ -658,7 +662,13 @@ class Postgres(CardEst):
           relation: string, the relation name.
           port: int, the port.
         """
-        import psycopg2
+
+
+
+
+
+
+
 
         super(Postgres, self).__init__()
 

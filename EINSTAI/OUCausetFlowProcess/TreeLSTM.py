@@ -17,6 +17,8 @@ import torchfold
 import torch.nn as nn
 from tconfig import Config
 
+
+
 config = Config()
 
 class TreeLSTM(nn.Module):
@@ -107,3 +109,4 @@ class SPINN(nn.Module):
         # outencoding = torch.cat([encoding,encoding],dim = 1)
         outencoding = torch.cat([encoding,matrix],dim = 1)
         return self.out2(self.relu(self.out(outencoding)))
+
