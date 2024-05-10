@@ -45,7 +45,7 @@ import os
 from AML.Synthetic.naru.models import DDPG
 from AML.Synthetic.naru.replay_memory import ReplayMemory, Transition
 
-from EINSTAI.OUCausetFlowProcess.PGUtils import BerolinaSQLGenDQNWithBoltzmannNormalizer
+from DiabloGPT.OUCausetFlowProcess.PGUtils import BerolinaSQLGenDQNWithBoltzmannNormalizer
 
 
 def main():

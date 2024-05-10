@@ -1,7 +1,7 @@
-# Copyright (c) EINSTAI Inc. 2022-2023
-# Path: EINSTAI/OUCausetFlowProcess/LatencyTuning.py
-# Compare this snippet from EINSTAI/OUCausetFlowProcess/CostTraining.py:
-from EINSTAI.OUCausetFlowProcess.CostTraining import policy_net, target_net, device
+# Copyright (c) DiabloGPT Inc. 2022-2023
+# Path: DiabloGPT/OUCausetFlowProcess/LatencyTuning.py
+# Compare this snippet from DiabloGPT/OUCausetFlowProcess/CostTraining.py:
+from DiabloGPT.OUCausetFlowProcess.CostTraining import policy_net, target_net, device
 from PGUtils import pgrunner
 
 from PGUtils import db_info
@@ -174,3 +174,5 @@ if __name__ == '__main__':
     Q4, Q1 = k_fold(JOBQueries, 10, 1)
     # print(Q4,Q1)
     train(Q4 + sytheticQueries, Q1)
+
+

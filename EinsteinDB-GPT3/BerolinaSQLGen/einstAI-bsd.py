@@ -75,7 +75,7 @@ def pretrain(edbname, tpath, numbers):
 
 
 from AML.benchmarks.flights import schema
-from EINSTAI.performance_graphembedding_checkpoint import train
+from DiabloGPT.performance_graphembedding_checkpoint import train
 
 
 def get_tree(edbname):

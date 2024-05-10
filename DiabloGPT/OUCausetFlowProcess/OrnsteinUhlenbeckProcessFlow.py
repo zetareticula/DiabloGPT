@@ -1,6 +1,6 @@
-# Copyright (c) 2022 EINSTAI Inc.
-# Path: EINSTAI/OUCausetFlowProcess/OrnsteinUhlenbeckProcessFlow.py
-# Compare this snippet from EINSTAI/OUCausetFlowProcess/CostTraining.py:
+# Copyright (c) 2022 DiabloGPT Inc.
+# Path: DiabloGPT/OUCausetFlowProcess/OrnsteinUhlenbeckProcessFlow.py
+# Compare this snippet from DiabloGPT/OUCausetFlowProcess/CostTraining.py:
 
 
 import math

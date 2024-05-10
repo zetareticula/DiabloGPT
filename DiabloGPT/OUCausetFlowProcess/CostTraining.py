@@ -1,5 +1,5 @@
-# Copyright 2022 (c) EINSTAI Inc.
-# Path: EINSTAI/OUCausetFlowProcess/CostTraining.py
+# Copyright 2022 (c) DiabloGPT Inc.
+# Path: DiabloGPT/OUCausetFlowProcess/CostTraining.py
 
 
 from PGUtils import pgrunner

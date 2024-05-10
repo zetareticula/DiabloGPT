@@ -86,7 +86,7 @@ class GraphConvolution(Module):
             + str(self.in_features) + ' -> ' \
             + str(self.out_features) + ')'
 
-# Path: EINSTAI/Train.py
+# Path: DiabloGPT/Train.py
 
 class arguments():
     def __init__(self):

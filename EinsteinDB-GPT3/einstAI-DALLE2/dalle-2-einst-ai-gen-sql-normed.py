@@ -20,7 +20,7 @@ from AML.Transformers.stochastic_forager.src.cpp.qpsolver.cvxopt.examples.doc.ch
 import utils
 from AML.Transformers.bayesian.factorized_sampler.factorized_sampler import main
 from AML.Synthetic.naru import models
-from EINSTAI.OUCausetFlowProcess.CostTraining import config
+from DiabloGPT.OUCausetFlowProcess.CostTraining import config
 
 
 

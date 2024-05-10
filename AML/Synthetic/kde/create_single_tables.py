@@ -1,7 +1,7 @@
 # TODO:
 # Path: AML/Synthetic/kde/create_single_tables.py
-# Compare this snippet from EINSTAI/OUCausetFlowProcess/LatencyTuning.py:
-# # Path: EINSTAI/OUCausetFlowProcess/LatencyTuning.py
+# Compare this snippet from DiabloGPT/OUCausetFlowProcess/LatencyTuning.py:
+# # Path: DiabloGPT/OUCausetFlowProcess/LatencyTuning.py
 
 
 

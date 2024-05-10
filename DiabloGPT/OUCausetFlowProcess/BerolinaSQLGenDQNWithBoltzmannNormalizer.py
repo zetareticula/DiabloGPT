@@ -12,12 +12,20 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+
+import json
+import os
+import random
+import time
 import numpy as np
 import self as self
 import torch
 from torch.nn import init
 
-from EINSTAI.OUCausetFlowProcess.PGUtils import pgrunner
+from DiabloGPT.OUCausetFlowProcess.PGUtils import pgrunner
+from DiabloGPT.OUCausetFlowProcess.SPINN import _DQN  # noqa
+
+
 from tconfig import Config
 
 config = Config()
@@ -33,11 +41,11 @@ db_info = DB(createSchema)
 
 featureSize = 128
 
-policy_net = SPINN(n_classes = 1, size = featureSize, n_words = 100,mask_size= 40*41,device=device).to(device)
+policy_net = n_classes.to(device)
 
 
 
-target_net = SPINN(n_classes = 1, size = featureSize, n_words = 100,mask_size= 40*41,device=device).to(device)
+target_net = n_classes.to(device)
 
 
 for name, param in policy_net.named_parameters():
@@ -209,6 +217,9 @@ class SelectStmtX:
         self.where = Where(select_stmt["whereClause"]) if "whereClause" in select_stmt else None
         self.groupby = GroupBy(select_stmt["groupClause"]) if "groupClause" in select_stmt else None
         self.orderby = OrderBy(select_stmt["sortClause"]) if "sortClause" in select_stmt else None
+
+
+
 
     def __str__(self,):
         """
