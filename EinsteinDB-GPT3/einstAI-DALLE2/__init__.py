@@ -4,7 +4,7 @@
 # Ornstein–Uhlenbeck process
 # """
 #
-# import numpy as np
+# import numpy as NP
 #
 #
 import self
@@ -22,7 +22,7 @@ from AML.Transformers.stochastic_forager.src.cpp.qpsolver.cvxopt.examples.doc.ch
 # import torch.nn as nn
 # import torch.optim as optim
 # import torch.nn.functional as F
-# import numpy as np
+# import numpy as NP
 # import random
 # from collections import namedtuple
 # import matplotlib.pyplot as plt

@@ -17,11 +17,11 @@ from torch.utils import data
 # Some input columns may naturally contain missing values.  These are handled
 # by the corresponding numpy/pandas semantics.
 #
-# Specifically, for any value (e.g., float, int, or np.nan) v:
+# Specifically, for any value (e.g., float, int, or NP.nan) v:
 #
-#   np.nan <op> v == False.
+#   NP.nan <op> v == False.
 #
-# This means that in progressive sampling, if a column's domain contains np.nan
+# This means that in progressive sampling, if a column's domain contains NP.nan
 # (at the first position in the domain), it will never be a valid sample
 # target.
 #
@@ -71,11 +71,11 @@ class Column(object):
     def SetDistribution(self, distinct_values):
         """This is all the values this column will ever see."""
         assert self.all_distinct_values is None
-        # pd.isnull returns true for both np.nan and np.datetime64('NaT').
+        # pd.isnull returns true for both NP.nan and NP.datetime64('NaT').
         is_nan = pd.isnull(distinct_values)
         contains_nan = np.any(is_nan)
         dv_no_nan = distinct_values[~is_nan]
-        # NOTE: np.sort puts NaT values at beginning, and NaN values at end.
+        # NOTE: NP.sort puts NaT values at beginning, and NaN values at end.
         # For our purposes we always add any null value to the beginning.
         vs = np.sort(np.unique(dv_no_nan))
         if contains_nan:
@@ -211,7 +211,7 @@ class CsvTable(Table):
             if col not in data:
                 continue
             if typ == np.int32 or typ == np.int64:
-                # deal with np.nan in data of type int
+                # deal with NP.nan in data of type int
                 cond = np.isnan(data[col])
                 temp = np.where(cond, 0, data[col])
                 temp = temp.astype(typ, copy=False)
@@ -237,8 +237,8 @@ class CsvTable(Table):
             # dropna=False so that if NA/NaN is present in data,
             # all_distinct_values will capture it.
             #
-            # For numeric: np.nan
-            # For datetime: np.datetime64('NaT')
+            # For numeric: NP.nan
+            # For datetime: NP.datetime64('NaT')
             col.SetDistribution(data[c].value_counts(dropna=False).index.values)
             columns.append(col)
         print('done, took {:.1f}s'.format(time.time() - s))
@@ -267,7 +267,7 @@ class TableDataset(data.Dataset):
         Args:
           col: the Column.
         Returns:
-          col_data: discretized version; an np.ndarray of type np.int32.
+          col_data: discretized version; an NP.ndarray of type NP.int32.
         """
         return Discretize(col)
 
@@ -289,16 +289,16 @@ def Discretize(col, data=None):
         data: list-like data to be discretized.  If None, defaults to col.data.
 
     Returns:
-        col_data: discretized version; an np.ndarray of type np.int32.
+        col_data: discretized version; an NP.ndarray of type NP.int32.
     """
     # pd.Categorical() does not allow categories be passed in an array
-    # containing np.nan.  It makes it a special case to return code -1
+    # containing NP.nan.  It makes it a special case to return code -1
     # for NaN values.
 
     if data is None:
         data = col.data
 
-    # pd.isnull returns true for both np.nan and np.datetime64('NaT').
+    # pd.isnull returns true for both NP.nan and NP.datetime64('NaT').
     isnan = pd.isnull(col.all_distinct_values)
     if isnan.any():
         # We always add nan or nat to the beginning.

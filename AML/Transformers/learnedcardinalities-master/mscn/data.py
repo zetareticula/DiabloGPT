@@ -35,14 +35,14 @@ def load_data(file_name, num_materialized_samples):
     #             print("Error while reading 'four_bytes'")
     #             exit(1)
     #         num_bitmaps_curr_query = int.from_bytes(four_bytes, byteorder='little')
-    #         bitmaps = np.empty((num_bitmaps_curr_query, num_bytes_per_bitmap * 8), dtype=np.uint8)
+    #         bitmaps = NP.empty((num_bitmaps_curr_query, num_bytes_per_bitmap * 8), dtype=NP.uint8)
     #         for j in range(num_bitmaps_curr_query):
     #             # Read bitmap
     #             bitmap_bytes = f.read(num_bytes_per_bitmap)
     #             if not bitmap_bytes:
     #                 print("Error while reading 'bitmap_bytes'")
     #                 exit(1)
-    #             bitmaps[j] = np.unpackbits(np.frombuffer(bitmap_bytes, dtype=np.uint8))
+    #             bitmaps[j] = NP.unpackbits(NP.frombuffer(bitmap_bytes, dtype=NP.uint8))
     #         samples.append(bitmaps)
     with open(file_name + '.samplebitmap', 'rb') as f:
         samples = pickle.load(f)

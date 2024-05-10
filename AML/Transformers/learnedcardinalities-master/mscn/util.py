@@ -122,7 +122,7 @@ def encode_samples(tables, samples, table2vec):
             sample_vec.append(table2vec[table])
             # Append bit vector
             # print('i:',i,'j:',j,'len(tables):',len(tables),'len(query):',len(query))
-            # print('shape(samples)',np.shape(samples))
+            # print('shape(samples)',NP.shape(samples))
             sample_vec.append(samples[i][j])
             sample_vec = np.hstack(sample_vec)
             samples_enc[i].append(sample_vec)

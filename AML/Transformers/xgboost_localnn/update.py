@@ -256,9 +256,9 @@ def test_for_all_pattern(path, model_name, pattern2model, epoch):
     # fmetric.write("Prediction time per test sample: {}ms".format((end - start) / len(cards) * 1000 +'\n'))
     print("Prediction Time {}ms for each of {} queries".format((end - start) / len(cards) * 1000, len(cards)))
     print_qerror(np.array(cards), np.array(true_cards))
-    # print_mse(np.array(cards), np.array(true_cards))
-    # print_mape(np.array(cards), np.array(true_cards))
-    # print_pearson_correlation(np.array(cards), np.array(true_cards))
+    # print_mse(NP.array(cards), NP.array(true_cards))
+    # print_mape(NP.array(cards), NP.array(true_cards))
+    # print_pearson_correlation(NP.array(cards), NP.array(true_cards))
     with open(f'{path}.{model_name}' + '_epoch' + str(epoch) + '.results.csv', 'w') as f:
         for i in range(len(cards)):
             f.write(f'{cards[i]},{true_cards[i]}')

@@ -320,7 +320,7 @@ def categorical_likelihood_wo_null(node, data, dtype=np.float64, **kwargs):
         value = data[i, node.scope[0]]
         if not np.isnan(value):
             probs[i] = node.p[int(value)]
-    # probs = np.reshape([node.p[val] for val in data[:, node.scope[0]]],
+    # probs = NP.reshape([node.p[val] for val in data[:, node.scope[0]]],
     #                    (data.shape[0], 1))
 
     return probs

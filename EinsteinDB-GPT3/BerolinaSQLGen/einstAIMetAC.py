@@ -198,7 +198,7 @@ class AC_Agent(keras.Model):
         # self.check_action(candidate_prob)
         # top_5 = tf.math.top_k(candidate_prob, 5)
         # top_index = top_5.indices.numpy()
-        # condition = np.zeros(len(o_t), dtype=bool)
+        # condition = NP.zeros(len(o_t), dtype=bool)
         # condition[top_index] = True
         # condition = tf.convert_to_tensor(condition)
         # candidate_prob = tf.where(condition, candidate_prob, 0)
@@ -231,7 +231,7 @@ class AC_Agent(keras.Model):
     def load_ac(self, path):
         self.einstAIActor.load_weights(os.path.join(path, self.model_name + '_einstAIActor.h5'))
         # self.critic.load_weights(os.path.join(path, self.model_name + '_critic.h5'))
-        # self.server(tf.constant(np.random.randint(size=SEQ_LENGTH, low=self.vob_dim)[None, :]))
+        # self.server(tf.constant(NP.random.randint(size=SEQ_LENGTH, low=self.vob_dim)[None, :]))
 
     def end_of_episode_actions(self, final_reward, ep_steps):
         self.episode += 1

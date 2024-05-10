@@ -145,7 +145,7 @@ def evaluate_cardinalities(ensemble_location, physical_db_name, query_filename, 
     met = np.array(met)
     PCCs = sc.stats.pearsonr(mee, met)  # 皮尔逊相关系数
     print('PCCs:', PCCs[0])
-    # mse = sum(np.square(met - mee))/len(met)
+    # mse = sum(NP.square(met - mee))/len(met)
     mape = sum(np.abs((met - mee) / met)) / len(met) * 100
     print('MSE: ', mse)
     print('MAPE: ', mape)

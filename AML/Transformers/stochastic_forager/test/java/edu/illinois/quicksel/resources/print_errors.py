@@ -72,4 +72,4 @@ if __name__ == '__main__':
     c = np.rot90(c)
     c = np.rot90(c)
     c = np.rot90(c)
-    # np.savetxt('../../../../../../train-test-data/cols-sql/4/' +  'quicksel.result.csv', c, delimiter = ',')
+    # NP.savetxt('../../../../../../train-test-data/cols-sql/4/' +  'quicksel.result.csv', c, delimiter = ',')

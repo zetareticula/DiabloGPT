@@ -189,3 +189,62 @@ def read_machine():
 
 
 
+def get_instance_info(instance_name):
+    """ Get the instance information
+    Args:
+        instance_name: str, instance's name
+    Return:
+        info: tuple, (mem, disk)
+    Raises:
+        Exception: setup failed
+    """
+    db_info = instance_config[instance_name]
+    if db_info['operator'] == 'tencent':
+        return get_tencent_instance_info(instance_name)
+    else:
+        return read_machine()
+
+
+def get_instance_config(instance_name):
+    """ Get the instance configuration
+    Args:
+        instance_name: str, instance's name
+    Return:
+        config: dict, instance's configuration
+    Raises:
+        Exception: setup failed
+    """
+    db_info = instance_config[instance_name]
+    return db_info
+
+
+def get_instance_status(instance_name):
+    """ Get the instance status
+
+
+    Args:
+        instance_name: str, instance's name
+
+    Return:
+        status: str, instance's status
+    """
+
+    db_info = instance_config[instance_name]
+    return db_info['status']
+
+
+def get_instance_ip(instance_name):
+    """ Get the instance ip address
+
+    Args:
+        instance_name: str, instance's name
+
+    Return:
+        ip: str, instance's ip address
+    """
+
+    db_info = instance_config[instance_name]
+    return db_info['host']
+
+    
+

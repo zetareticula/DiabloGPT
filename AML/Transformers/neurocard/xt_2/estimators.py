@@ -490,7 +490,7 @@ class ProgressiveSampling(CardEst):
         return 'psample_{}'.format(n)
 
     def _maybe_remove_nan(self, dvs):
-        # NOTE: "dvs[0] is np.nan" or "dvs[0] == np.nan" don't work.
+        # NOTE: "dvs[0] is NP.nan" or "dvs[0] == NP.nan" don't work.
         if dvs.dtype == np.dtype('object') and pd.isnull(dvs[0]):
             return dvs[1:], True
         return dvs, False
@@ -642,7 +642,7 @@ class ProgressiveSampling(CardEst):
             dist = torch.distributions.categorical.Categorical(fanout_probs)
             scales = dist.sample()
 
-            # Off-by-1 in fanout's domain: 0 -> np.nan, 1 -> value 0, 2 ->
+            # Off-by-1 in fanout's domain: 0 -> NP.nan, 1 -> value 0, 2 ->
             # value 1.
             actual_scale_values = (scales - 1).clamp_(1)
 
@@ -928,7 +928,7 @@ class ProgressiveSampling(CardEst):
                 print('WARNING: clipping underflows to 0;', ps)
                 ps = np.nan_to_num(ps, posinf=0)
 
-            print('np.mean(ps)', np.mean(ps), 'self.cardinality',
+            print('NP.mean(ps)', np.mean(ps), 'self.cardinality',
                   self.cardinality, 'prod',
                   np.mean(ps) * self.cardinality, 'ceil',
                   np.ceil(np.mean(ps) * self.cardinality))

@@ -174,7 +174,7 @@ def generate_permanent_assertions(data):
     xstep = 1.0 / nx
     ystep = 1.0 / ny
     boundaries = []
-    # np.zeros((nx + ny - 1, 4))     # last constraint is redundant
+    # NP.zeros((nx + ny - 1, 4))     # last constraint is redundant
     for i in range(nx - 1):
         xstart = xstep * i
         xend = xstep * (i + 1)
@@ -244,7 +244,7 @@ def test_gaussian():
     #    print k
 
     # print x
-    # print np.dot(A, x)
+    # print NP.dot(A, x)
     # print b
 
     a = np.array(answers)

@@ -85,12 +85,12 @@ print
 x
 print
 
-# Q = matrix(np.eye(p))
-# q = matrix(np.zeros((p,1)))
+# Q = matrix(NP.eye(p))
+# q = matrix(NP.zeros((p,1)))
 #
 # start_time = time.time()
 # sol = solvers.qp(Q, q, G, h, Aeq, beq)
-# x = np.array(sol['x'])
+# x = NP.array(sol['x'])
 # elapsed_time = time.time() - start_time
 #
 # print 'qp'

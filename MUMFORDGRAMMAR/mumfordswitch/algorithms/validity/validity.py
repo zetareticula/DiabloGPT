@@ -1,12 +1,34 @@
+# import logging
+# from math import isclose
+#
+#
+# import numpy as np
+# from mumford_switch.structure.base import Sum
+# from mumford_switch.structure.leaves import IdentityNumericLeaf
+# from FACE.structure.Base import get_nodes_by_type, Product
 import logging
-from math import isclose
+import os
+from cmath import isclose
 
-import numpy as np
-from mumford_switch.structure.base import Sum
-from mumford_switch.structure.leaves import IdentityNumericLeaf
-from FACE.structure.Base import get_nodes_by_type, Product
+from sympy import Product
+
+from MUMFORDGRAMMAR.mumfordswitch.structure.base import Sum
+from MUMFORDGRAMMAR.mumfordswitch.structure.leaves import IdentityNumericLeaf
+
 
 logger = logging.getLogger(__name__)
+
+
+def get_nodes_by_type(node, Product):
+    """
+
+    :param node:
+    :param Product:
+    :return:
+    """
+
+    param_knob_k = set
+
 
 
 def is_consistent(node):
@@ -93,6 +115,8 @@ def is_valid(node, check_ids=True, check_cluster_centers=False):
         val, err = has_valid_ids(node)
         if not val:
             return val, err
+
+
 
     for n in get_nodes_by_type(node):
         if len(n.scope) == 0:

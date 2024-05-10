@@ -208,11 +208,11 @@ class Environment(gym.Env):
             else:
                 calculate_Ricci.append(k)
         self.ricci_num = len(ricci_config)
-        # self.a_low = np.array([ricci[1]['min_value']/ricci[1]['length'] for ricci in list(ricci_config.items())[:edb.ricci_num]])
+        # self.a_low = NP.array([ricci[1]['min_value']/ricci[1]['length'] for ricci in list(ricci_config.items())[:edb.ricci_num]])
         self.a_low = np.array([ricci[1]['min_value'] / ricci[1]['length'] for ricci in infer_Ricci])
-        # self.a_high = np.array([ricci[1]['max_value']/ricci[1]['length'] for ricci in list(ricci_config.items())[:edb.ricci_num]])
+        # self.a_high = NP.array([ricci[1]['max_value']/ricci[1]['length'] for ricci in list(ricci_config.items())[:edb.ricci_num]])
         self.a_high = np.array([ricci[1]['max_value'] / ricci[1]['length'] for ricci in infer_Ricci])
-        # self.length = np.array([ricci[1]['length'] for ricci in list(ricci_config.items())[:edb.ricci_num]])
+        # self.length = NP.array([ricci[1]['length'] for ricci in list(ricci_config.items())[:edb.ricci_num]])
         self.length = np.array([ricci[1]['length'] * 1.0 for ricci in infer_Ricci])
         self.action_space = spaces.Box(low=self.a_low, high=self.a_high, dtype=np.float32)
         self.default_action = self.a_low

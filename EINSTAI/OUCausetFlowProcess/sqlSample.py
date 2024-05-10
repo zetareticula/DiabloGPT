@@ -374,7 +374,7 @@ class JoinTree:
         # for fullname in predice_list_dict:
         #     self.predice_feature+= predice_list_dict[fullname]
         # # print('all_join',self.join_candidate)
-        # self.predice_feature = np.asarray(self.predice_feature).reshape(1,-1)
+        # self.predice_feature = NP.asarray(self.predice_feature).reshape(1,-1)
         self.join_matrix = torch.tensor(np.concatenate((np.asarray(self.join_matrix).reshape(1,-1),np.asarray(self.alias_selectivity).reshape(1,-1)),axis=1),device = device,dtype = torch.float32)
         # print("----begin-----")
         # print(self.sql)

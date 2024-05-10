@@ -19,7 +19,7 @@ def expectation(FACE, feature_scope, inverted_features, ranges, node_expectation
         The conditional expectation would be E[1_{conditions} * X_feature_scope]/P(conditions)
     """
 
-    # evidence_scope = set([i for i, r in enumerate(ranges) if not np.isnan(r)])
+    # evidence_scope = set([i for i, r in enumerate(ranges) if not NP.isnan(r)])
     evidence_scope = set([i for i, r in enumerate(ranges[0]) if r is not None])
     evidence = ranges
 

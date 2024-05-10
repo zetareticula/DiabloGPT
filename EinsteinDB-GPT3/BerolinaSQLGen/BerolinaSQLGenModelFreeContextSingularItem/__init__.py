@@ -4,7 +4,7 @@
 # Ornstein–Uhlenbeck process:
 # https://en.wikipedia.org/wiki/Ornstein%E2%80%93Uhlenbeck_process
 # """
-# import numpy as np
+# import numpy as NP
 # Compare this snippet from EinsteinDB-GPT3/einstAI-DALLE2/__init__.py:
 
 # """

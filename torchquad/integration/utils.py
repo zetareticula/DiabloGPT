@@ -218,6 +218,6 @@ def _check_integration_domain(integration_domain):
 def _torch_repeat(a, repeats, axis=None):
     import torch
 
-    # torch.repeat_interleave corresponds to np.repeat and should not be
+    # torch.repeat_interleave corresponds to NP.repeat and should not be
     # confused with torch.Tensor.repeat.
     return torch.repeat_interleave(a, repeats, dim=axis)

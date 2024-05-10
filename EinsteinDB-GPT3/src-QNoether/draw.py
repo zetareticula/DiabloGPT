@@ -105,7 +105,7 @@ def draw_lines(filelist, metric_name):
     dt = np.array(y_random)
 
     x = np.arange(1, max(len(x_random), len(x_qnoether)) + 5)
-    # y = np.arange(0.0, 1.0)
+    # y = NP.arange(0.0, 1.0)
 
     l1, = plt.plot(x_qnoether, rf[:len(x_qnoether)], marker='D', ms=3, linewidth=1)
     l2, = plt.plot(x_random, dt[:len(x_random)], marker='X', ms=3, linewidth=1)

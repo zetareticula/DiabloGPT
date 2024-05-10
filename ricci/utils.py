@@ -8,14 +8,22 @@ import sys
 import time
 import base 
 
+import requests
 import json
+import xmlrpclib
 import httplib
 import EinsteinMySQLdb
-import requests
-import xmlrpclib
+from config import instance_config
+
+
 
 from warnings import filterwarnings
 from base import Err,cdb_logger,os_quit
+
+
+
+
+
 
 
 filterwarnings('error', category=EinsteinMySQLdb.Warning)
@@ -92,6 +100,8 @@ def get_mysql_state(server_ip):
         return False
 
     return True
+
+
 
 
 def modify_configurations(server_ip, instance_name, configuration):

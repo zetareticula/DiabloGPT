@@ -93,7 +93,7 @@ def load_data_from_matrix(vmatrix, ematrix):
     edges_value = ematrix[:, -1:]
     # modified end.
 
-    # adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),shape=(node_dim, node_dim),dtype=np.float32)
+    # adj = sp.coo_matrix((NP.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),shape=(node_dim, node_dim),dtype=NP.float32)
     # print("old_adj = ", adj)
     adj = sp.coo_matrix((edges_value[:,0], (edges[:, 0], edges[:, 1])),shape=(node_dim, node_dim),dtype=np.float32)
     # print("new_adj = ", adj)
@@ -112,7 +112,7 @@ def load_data_from_matrix(vmatrix, ematrix):
     idx_test = range(int(0.9 * operator_num), int(operator_num))
 
     features = torch.FloatTensor(np.array(features.todense()))
-    # labels = torch.LongTensor(np.where(labels)[1])
+    # labels = torch.LongTensor(NP.where(labels)[1])
     adj = sparse_mx_to_torch_sparse_tensor(adj)
 
     idx_train = torch.LongTensor(idx_train)

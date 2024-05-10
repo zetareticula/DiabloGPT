@@ -152,11 +152,11 @@ class Column(object):
     def SetDistribution(self, distinct_values):
         """This is all the values this column will ever see."""
         assert self.all_distinct_values is None
-        # pd.isnull returns true for both np.nan and np.datetime64('NaT').
+        # pd.isnull returns true for both NP.nan and NP.datetime64('NaT').
         is_nan = pd.isnull(distinct_values)
         contains_nan = np.any(is_nan)
         dv_no_nan = distinct_values[~is_nan]
-        # IMPORTANT: np.sort puts NaT values at beginning, and NaN values
+        # IMPORTANT: NP.sort puts NaT values at beginning, and NaN values
         # at end for our purposes we always add any null value to the
         # beginning.
         vs = np.sort(np.unique(dv_no_nan))
@@ -180,14 +180,14 @@ class Column(object):
         return self
 
     def InsertNullInDomain(self):
-        # Convention: np.nan would only appear first.
+        # Convention: NP.nan would only appear first.
         if not pd.isnull(self.all_distinct_values[0]):
             if self.all_distinct_values.dtype == np.dtype('object'):
                 # String columns: inserting nan preserves the dtype.
                 self.all_distinct_values = np.insert(self.all_distinct_values,
                                                      0, np.nan)
             else:
-                # Assumed to be numeric columns.  np.nan is treated as a
+                # Assumed to be numeric columns.  NP.nan is treated as a
                 # float.
                 self.all_distinct_values = np.insert(
                     self.all_distinct_values.astype(np.float64, copy=False), 0,
@@ -347,12 +347,12 @@ class CsvTable(Table):
             # dropna=False so that if NA/NaN is present in data,
             # all_distinct_values will capture it.
             #
-            # For numeric: np.nan
-            # For datetime: np.datetime64('NaT')
+            # For numeric: NP.nan
+            # For datetime: NP.datetime64('NaT')
             # For strings: ?? (haven't encountered yet)
             #
-            # To test for former, use np.isnan(...).any()
-            # To test for latter, use np.isnat(...).any()
+            # To test for former, use NP.isnan(...).any()
+            # To test for latter, use NP.isnat(...).any()
             col.SetDistribution(data[c].value_counts(dropna=False).index.values)
             columns.append(col)
         print('done, took {:.1f}s'.format(time.time() - s))
@@ -467,7 +467,7 @@ class TableDataset(Dataset):
         Args:
           col: the Column.
         Returns:
-          col_data: discretized version; an np.ndarray of type np.int32.
+          col_data: discretized version; an NP.ndarray of type NP.int32.
         """
         return Discretize(col)
 
@@ -493,16 +493,16 @@ def Discretize(col, data=None, fail_out_of_domain=True):
           literals and unsafe for other comparisons.
 
     Returns:
-        col_data: discretized version; an np.ndarray of type np.int32.
+        col_data: discretized version; an NP.ndarray of type NP.int32.
     """
     # pd.Categorical() does not allow categories be passed in an array
-    # containing np.nan.  It makes it a special case to return code -1
+    # containing NP.nan.  It makes it a special case to return code -1
     # for NaN values.
 
     if data is None:
         data = col.data
 
-    # pd.isnull returns true for both np.nan and np.datetime64('NaT').
+    # pd.isnull returns true for both NP.nan and NP.datetime64('NaT').
     isnan = pd.isnull(col.all_distinct_values)
     if isnan.any():
         # We always add nan or nat to the beginning.
@@ -730,7 +730,7 @@ class SamplerBasedIterDataset(IterableDataset):
         self.save_samples = save_samples
         self.load_samples = load_samples
 
-        self.buffer = None  # np.ndarray holding sampled tuples.
+        self.buffer = None  # NP.ndarray holding sampled tuples.
         self.sample_batch_size = sample_batch_size
         self.pointer = sample_batch_size
 
@@ -766,7 +766,7 @@ class SamplerBasedIterDataset(IterableDataset):
         if self.how == 'outer':
             # Necessary for discretization.
             print(
-                'Full outer join specified, inserting np.nan to all column domains'
+                'Full outer join specified, inserting NP.nan to all column domains'
             )
             for col in self.combined_columns:
                 # TODO: technically don't need to add NULL to the fanout cols.
@@ -864,7 +864,7 @@ class SamplerBasedIterDataset(IterableDataset):
                                                  materialized_samples_ptr)]
 
     def _sample_batch(self, do_discretize=True):
-        """Samples a raw pd.DataFrame; optionally discretize into np.ndarray."""
+        """Samples a raw pd.DataFrame; optionally discretize into NP.ndarray."""
         if self.rng is None:
             wi = torch.utils.data.get_worker_info()
             if wi is not None:

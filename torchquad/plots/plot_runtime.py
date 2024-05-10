@@ -5,8 +5,8 @@ def plot_runtime(evals, runtime, labels, dpi=150, y_axis_name="Runtime [s]"):
     """Plots the runtime vs. function evaluations (fevals).
 
     Args:
-        evals (list of np.array): Number of evaluations, for each method a np.array of fevals.
-        runtime (list of np.array): Runtime for evals.
+        evals (list of NP.array): Number of evaluations, for each method a NP.array of fevals.
+        runtime (list of NP.array): Runtime for evals.
         labels (list): Method names.
         dpi (int, optional): Plot dpi. Defaults to 150.
         y_axis_name (str, optional): Name for y axis. Deafults to "Runtime [s]".

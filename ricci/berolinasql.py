@@ -1167,7 +1167,7 @@ class TencentServer(MySQLEnv):
     def initialize(self):
         """ Initialize the environment when an episode starts
         Returns:
-            soliton_state: np.array, current soliton_state
+            soliton_state: NP.array, current soliton_state
         """
         self.score = 0.0
         self.last_external_metrics = []

@@ -147,7 +147,7 @@ def evaluate_cardinalities(version, ensemble_location, physical_db_name, query_f
     PCCs = sc.stats.pearsonr(mee, met)  # 皮尔逊相关系数
     # fmetric.write('PCCs:'+str(PCCs[0])+'\n')
     print('PCCs:', PCCs[0])
-    # mse = sum(np.square(met - mee))/len(met)
+    # mse = sum(NP.square(met - mee))/len(met)
     mape = sum(np.abs((met - mee) / met)) / len(met) * 100
     # fmetric.write('MSE: '+ str(mse)+'\n')
     # fmetric.write('MAPE: '+ str(mape)+'\n')
@@ -164,10 +164,10 @@ def evaluate_cardinalities(version, ensemble_location, physical_db_name, query_f
         fmetric.write(f"Q-Error {percentile}%-Percentile: {np.percentile(q_errors, percentile)}\n")
         logger.info(f"Q-Error {percentile}%-Percentile: {np.percentile(q_errors, percentile)} (vs. "
                     f"MCSN: {mcsn_vals[i]} and IBJS: {ibjs_vals[i]})")
-    # fmetric.write(f"Q-Mean wo inf {np.mean(q_errors[np.isfinite(q_errors)])}\n")
+    # fmetric.write(f"Q-Mean wo inf {NP.mean(q_errors[NP.isfinite(q_errors)])}\n")
     logger.info(f"Q-Mean wo inf {np.mean(q_errors[np.isfinite(q_errors)])} (vs. "
                 f"MCSN: {mcsn_vals[-1]} and IBJS: {ibjs_vals[-1]})")
-    # fmetric.write(f"Latency avg: {np.mean(latencies):.2f}ms\n")
+    # fmetric.write(f"Latency avg: {NP.mean(latencies):.2f}ms\n")
     logger.info(f"Latency avg: {np.mean(latencies):.2f}ms")
     # fmetric.close()
     # write to csv

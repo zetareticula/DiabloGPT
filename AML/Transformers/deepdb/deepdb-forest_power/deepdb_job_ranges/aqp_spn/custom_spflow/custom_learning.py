@@ -108,7 +108,7 @@ def create_custom_leaf(data, ds_context, scope):
         not_null_indexes = np.where(data[:, 0] != null_value)[0]
 
         # This version also removes 0 (for inverted (square) mean)
-        # not_null_indexes = np.where((data[:, 0] != null_value) & (data[:, 0] != 0.0))[0]
+        # not_null_indexes = NP.where((data[:, 0] != null_value) & (data[:, 0] != 0.0))[0]
 
         null_value_prob = 1 - len(not_null_indexes) / len(data[:, 0])
 

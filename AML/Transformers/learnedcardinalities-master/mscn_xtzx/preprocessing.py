@@ -87,7 +87,7 @@ def prepare_samples(sql_path, samples):
                         sample_bitmap.append(bool_array.astype(int).values)
                 except Exception as e:
                     # f2.write('Pass '+query+'\n')
-                    # sample_bitmap.append(np.zeros(1000).astype(int))
+                    # sample_bitmap.append(NP.zeros(1000).astype(int))
                     # print('table:', table)
                     # pass
                     raise Exception(table)

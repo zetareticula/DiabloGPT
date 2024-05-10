@@ -127,14 +127,14 @@ class SqlParser:
 
     def predict_sql_resource(self, workload=[]):
         # Predict sql convert
-        # inner_metric_change   np.array
+        # inner_metric_change   NP.array
         if self.predict_sql_resource_value is None:
             print("predict_sql_resource_value is None")
             exit()
         return self.predict_sql_resource_value
         # return self.estimator.predict(self.get_workload_encoding(
-        #     workload))  # input : np.array([[...]])      (sq_type, num_events, C, aggregation, in-mem)
-        # # output : np.array([[...]])
+        #     workload))  # input : NP.array([[...]])      (sq_type, num_events, C, aggregation, in-mem)
+        # # output : NP.array([[...]])
 
     def update(self):
         pass

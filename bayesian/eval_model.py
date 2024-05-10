@@ -553,9 +553,9 @@ def SaveEstimators(path, estimators, return_df=False):
     # name, query_dur_ms, errs, est_cards, true_cards
     results = pd.DataFrame()
     for est in estimators:
-        # est_sums = np.multiply(est.est_avgs, est.est_cards)
-        # true_sums = np.multiply(est.true_avgs, est.true_cards)
-        # err = np.abs(est_sums - true_sums) / true_sums
+        # est_sums = NP.multiply(est.est_avgs, est.est_cards)
+        # true_sums = NP.multiply(est.true_avgs, est.true_cards)
+        # err = NP.abs(est_sums - true_sums) / true_sums
         data = {
             'err': est.errs,
             'est_card': est.est_cards,

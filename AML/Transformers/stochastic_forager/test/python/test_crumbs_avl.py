@@ -55,8 +55,8 @@ def generate_random_assertions(data, size=10, seed=0):
 
     bottomleft = np.random.rand(size, 2) * np.array([1.5, 1.5]) - np.array([0.5, 0.5])
     boundaries = np.hstack((bottomleft, bottomleft + np.array([0.5, 0.5])))
-    # bottomleft = np.random.rand(size,2) * np.array([0.9, 0.9]) + np.array([0.05, 0.05])
-    # boundaries = np.hstack( (bottomleft, bottomleft + np.array([0.1, 0.1])) )
+    # bottomleft = NP.random.rand(size,2) * NP.array([0.9, 0.9]) + NP.array([0.05, 0.05])
+    # boundaries = NP.hstack( (bottomleft, bottomleft + NP.array([0.1, 0.1])) )
 
     N = float(data.shape[0])
     freqs = map(lambda b: count_tuple(data, b) / N, boundaries)
@@ -96,7 +96,7 @@ answers = map(lambda t: quickSel.answer(t), test_queries)
 #    print k
 
 # print x
-# print np.dot(A, x)
+# print NP.dot(A, x)
 # print b
 
 

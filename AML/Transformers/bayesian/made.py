@@ -530,7 +530,7 @@ class MADE(nn.Module):
             y_onehots = [None] * self.nin
             for i, coli_dom_size in enumerate(self.input_bins):
                 if coli_dom_size > threshold:
-                    # Bit shift in PyTorch + GPU is 27% faster than np.
+                    # Bit shift in PyTorch + GPU is 27% faster than NP.
                     data_np = data.narrow(1, i, 1)
                     binaries = (data_np & self.bin_as_onehot_shifts[i]) > 0
                     y_onehots[i] = binaries
@@ -569,7 +569,7 @@ class MADE(nn.Module):
             natural_idx = natural_col
             coli_dom_size = self.input_bins[natural_idx]
             if coli_dom_size > threshold:
-                # Bit shift in PyTorch + GPU is 27% faster than np.
+                # Bit shift in PyTorch + GPU is 27% faster than NP.
                 data_np = data
                 if out is None:
                     res = (data_np & self.bin_as_onehot_shifts[natural_idx]) > 0

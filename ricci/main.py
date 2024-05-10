@@ -18,7 +18,7 @@ def einstAIActorCritic(env, sess, learning_rate, train_min_size, size_mem, size_
     # Compare this snippet from AML/Synthetic/deepdb/deepdb_job_ranges/aqp_spn/custom_spflow/custom_learning.py:
     # import logging
     #
-    # import numpy as np
+    # import numpy as NP
     # from aqp_spn.aqp_leaves import Categorical
     # from aqp_spn.aqp_leaves import IdentityNumericLeaf
     # from sklearn.cluster import KMeans
@@ -68,7 +68,7 @@ def einstAIActorCritic(env, sess, learning_rate, train_min_size, size_mem, size_
     #         leaves = create_custom_leaf
     #
     #     if rand_gen is None:
-    #         rand_gen = np.random.RandomState(17)
+    #         rand_gen = NP.random.RandomState(17)
     #
     #     from a import a
     #     from b import b
@@ -80,7 +80,7 @@ def expectation(FACE, feature_scope, inverted_features, ranges, node_expectation
 
                 use_generated_code=False, spn_id=None, meta_types=None, gen_code_stats=None):
 
-        # evidence_scope = set([i for i, r in enumerate(ranges) if not np.isnan(r)])
+        # evidence_scope = set([i for i, r in enumerate(ranges) if not NP.isnan(r)])
     evidence_scope = set([i for i, r in enumerate(ranges[0]) if r is not None])
     evidence = ranges
 
@@ -144,7 +144,7 @@ def expectation(FACE, feature_scope, inverted_features, ranges, node_expectation
     # TODO: 训练predict
     # sample_times = 2
     # for i in range(sample_times):
-    #     training_workloads.append(np.random.choice(workload, np.random.randint(len(workload)), replace=False, p=None))
+    #     training_workloads.append(NP.random.choice(workload, NP.random.randint(len(workload)), replace=False, p=None))
     # X = []
     # Y = []
     # for w in training_workloads:
@@ -154,8 +154,8 @@ def expectation(FACE, feature_scope, inverted_features, ranges, node_expectation
     #     env.preheat()
     #     state1 = env.edb.fetch_internal_metrics()
     #     Y.append(state1 - state0)
-    # X = np.array(X)
-    # Y = np.array(Y)
+    # X = NP.array(X)
+    # Y = NP.array(Y)
     # env.parser.estimator.fit(X, Y, batch_size=50, epochs=predictor_epoch)
 
     # TODO save&load model e.g. env.parser.estimator.save_weights(path)
@@ -172,10 +172,10 @@ def expectation(FACE, feature_scope, inverted_features, ranges, node_expectation
 
 
     # First iteration
-    cur_state = env._get_obs()  # np.array      (inner_metric + sql)
+    cur_state = env._get_obs()  # NP.array      (inner_metric + sql)
     cur_state = cur_state.reshape((1, env.soliton_state.shape[0]))
     # causet_action = env.action_space.sample()
-    causet_action = env.fetch_action()  # np.array
+    causet_action = env.fetch_action()  # NP.array
     action_2 = causet_action.reshape((1, env.ricci_num))  # for memory
     action_2 = action_2[:, :env.action_space.shape[0]]
     new_state, reward, socre, cur_throughput = env.step(causet_action, 0,

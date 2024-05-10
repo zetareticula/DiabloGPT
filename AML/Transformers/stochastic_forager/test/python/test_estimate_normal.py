@@ -58,7 +58,7 @@ def generate_permanent_queries(data):
     xstep = 1.0 / nx
     ystep = 1.0 / ny
     boundaries = []
-    # np.zeros((nx + ny - 1, 4))     # last constraint is redundant
+    # NP.zeros((nx + ny - 1, 4))     # last constraint is redundant
     for i in range(nx - 1):
         xstart = xstep * i
         xend = xstep * (i + 1)

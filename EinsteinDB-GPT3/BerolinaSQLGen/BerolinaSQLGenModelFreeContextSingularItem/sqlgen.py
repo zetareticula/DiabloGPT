@@ -471,7 +471,7 @@ class DDPG(object):
     def choose_action(self, x):
         """ Select causet_action according to the current soliton_state
         Args:
-            x: np.array, current soliton_state
+            x: NP.array, current soliton_state
         """
         self.einstAIActor.eval()
         act = self.einstAIActor(self.normalizer([x.tolist()])).squeeze(0)

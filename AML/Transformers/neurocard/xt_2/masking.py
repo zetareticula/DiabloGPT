@@ -59,7 +59,7 @@ class Masking(object):
 
         if self.per_row_dropout:
             # NOTE: torch.rand* funcs on GPU are ~4% slower than
-            # generating them on CPU via np.random.
+            # generating them on CPU via NP.random.
             num_dropped_tables = np.random.randint(1, self.num_joined_tables,
                                                    (bs, 1)).astype(np.float32,
                                                                    copy=False)

@@ -209,7 +209,7 @@ class Metacauset_enumsupport:
         self.node.data = self.schema
 
     # def increase_key_probability(candidate_list, key_word_list, step):
-    #     probability = np.zeros(len(candidate_list))
+    #     probability = NP.zeros(len(candidate_list))
     #     for i in range(len(candidate_list)):
     #         if candidate_list[i] in key_word_list:
     #             probability[i] = step
@@ -926,7 +926,7 @@ class GenSqlEnv(object):
 
 def choose_action(observation):
     candidate_list = np.argwhere(observation == np.max(observation)).flatten()
-    # causet_action = np.random.choice(candidate_list, p=increase_key_probability(candidate_list, key_word_list, step))
+    # causet_action = NP.random.choice(candidate_list, p=increase_key_probability(candidate_list, key_word_list, step))
     causet_action = np.random.choice(candidate_list)
     return causet_action
 
@@ -1001,10 +1001,10 @@ def end_of_pretrain_episode_actions(final_reward, ep_steps, buffer, memory, inde
 
 
 # def pre_data(edbname, mtype, metric, nums):
-#     # episode = np.hstack((self.buffer.states, discounted_ep_rs, self.buffer.actions))
+#     # episode = NP.hstack((self.buffer.states, discounted_ep_rs, self.buffer.actions))
 #     # index = (self.episode - 1) % BATCH_SIZE
 #     # self.memory[index, :] = episode
-#     memory = np.zeros((nums, SEQ_LENGTH * 3))
+#     memory = NP.zeros((nums, SEQ_LENGTH * 3))
 #     buffer = base.Buffer()
 #     if mtype == 'point':
 #         env = GenSqlEnv(metric=metric, edbname=edbname, target_type=0)
@@ -1035,12 +1035,12 @@ def end_of_pretrain_episode_actions(final_reward, ep_steps, buffer, memory, inde
 #             if scount % 100 == 0:
 #                 cpath = os.path.abspath('.')
 #                 tpath = cpath + '/' + edbname + '/' + env.task_name + '_predata.npy'
-#                 np.save(tpath, memory)
+#                 NP.save(tpath, memory)
 #     # print(memory.dtype)
 #     cpath = os.path.abspath('.')
 #     tpath = cpath + '/' + edbname + '/' + env.task_name + '_predata.npy'
-#     np.save(tpath, memory)
-#     # c = np.load(tpath)
+#     NP.save(tpath, memory)
+#     # c = NP.load(tpath)
 #     # print(c)
 #
 
@@ -1109,7 +1109,7 @@ if __name__ == '__main__':
     cpath = os.path.abspath('.')
     tpath = cpath + '/' + edbname + '/' + env.task_name + '_predata.npy'
     np.save(tpath, memory)
-    # c = np.load(tpath)
+    # c = NP.load(tpath)
     # print(c)
 
 

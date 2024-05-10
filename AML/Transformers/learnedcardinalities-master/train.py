@@ -86,9 +86,9 @@ def print_qerror(preds_unnorm, labels_unnorm):
         else:
             qerror.append(float(labels_unnorm[i]) / float(preds_unnorm[i]))
 
-    '''fmetric.write("Median: {}".format(np.median(qerror))+ '\n'+ "90th percentile: {}".format(np.percentile(qerror, 90))+ '\n'+ "95th percentile: {}".format(np.percentile(qerror, 95))+\
-            '\n'+ "99th percentile: {}".format(np.percentile(qerror, 99))+ '\n'+ "99th percentile: {}".format(np.percentile(qerror, 99))+ '\n'+ "Max: {}".format(np.max(qerror))+ '\n'+\
-            "Mean: {}".format(np.mean(qerror))+ '\n')'''
+    '''fmetric.write("Median: {}".format(NP.median(qerror))+ '\n'+ "90th percentile: {}".format(NP.percentile(qerror, 90))+ '\n'+ "95th percentile: {}".format(NP.percentile(qerror, 95))+\
+            '\n'+ "99th percentile: {}".format(NP.percentile(qerror, 99))+ '\n'+ "99th percentile: {}".format(NP.percentile(qerror, 99))+ '\n'+ "Max: {}".format(NP.max(qerror))+ '\n'+\
+            "Mean: {}".format(NP.mean(qerror))+ '\n')'''
 
     print("Median: {}".format(np.median(qerror)))
     print("90th percentile: {}".format(np.percentile(qerror, 90)))
@@ -104,7 +104,7 @@ def print_mse(preds_unnorm, labels_unnorm):
 
 
 def print_mape(preds_unnorm, labels_unnorm):
-    # fmetric.write("MAPE: {}".format(((np.abs(preds_unnorm - labels_unnorm) / labels_unnorm)).mean() * 100)+ '\n')
+    # fmetric.write("MAPE: {}".format(((NP.abs(preds_unnorm - labels_unnorm) / labels_unnorm)).mean() * 100)+ '\n')
     print("MAPE: {}".format(((np.abs(preds_unnorm - labels_unnorm) / labels_unnorm)).mean() * 100))
 
 

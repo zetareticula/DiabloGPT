@@ -115,7 +115,7 @@ def join_count_tables(table_info, parsed_join_clauses, count_tables, join_how):
             right_on=["{}:{}".format(t2, c) for c in cs2],
         )
 
-    # NOTE: `np.nanprod()` treats `np.nan` as 1.
+    # NOTE: `NP.nanprod()` treats `NP.nan` as 1.
     df_ret["cnt"] = np.nanprod([df_ret[f"{t}:cnt"] for t in table_info], axis=0)
     return df_ret
 

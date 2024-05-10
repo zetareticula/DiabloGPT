@@ -2,12 +2,26 @@ name: torchquad
 channels:
 - conda-forge
 dependencies:
-- autoray>=0.2.5
-- loguru>=0.5.3
-- matplotlib>=3.3.3
-- pytest>=6.2.1
-- python>=3.8
-- scipy>=1.6.0
-- sphinx>=3.4.3
-- sphinx_rtd_theme>=0.5.1
-- tqdm>=4.56.0
+- python=3.8
+- numpy
+- scipy
+- matplotlib
+- jupyter
+- sympy
+- pytorch
+- torchvision
+- scikit-learn
+- scikit-image
+- pandas
+- seaborn
+- ipywidgets
+- nodejs
+- pip
+- pip:
+  - torchquad
+  - jupyterlab
+  - jupyterlab-git
+  - jupyterlab-lsp
+  - jupyterlab-toc
+  - jupyterlab-widgets
+

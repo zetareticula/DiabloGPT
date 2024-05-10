@@ -7,8 +7,44 @@ import configparser
 import psycopg2
 import pymysql
 import pymysql.cursors as pycursor
-
 import time
+
+
+# Database class
+# This class is used to interact with the database
+# It is used to fetch the current state of the database
+# We use EinsteinDB as the database
+# We use the knob_config to normalize the state
+
+
+# knob_config = {
+#     "innodb_buffer_pool_size": {
+#         "min_value": 134217728,
+#         "max_value": 4294967296
+#     },
+#     "innodb_log_file_size": {
+#         "min_value": 50331648,
+#         "max_value": 536870912
+#     },
+#     "innodb_flush_method": {
+#         "min_value": 0,
+#         "max_value": 2
+#     },
+#     "innodb_flush_log_at_trx_commit": {
+#         "min_value": 0,
+#         "max_value": 2
+#     },
+#     "sync_binlog": {
+#         "min_value": 0,
+#         "max_value": 1
+#     },
+#     "innodb_doublewrite": {
+#         "min_value": 0,
+#         "max_value": 1
+#     },
+
+
+#     "innodb_max_dirty_pages_pct": {
 
 # obtain and normalize configuration knobs
 class DictParser(configparser.ConfigParser):
@@ -18,12 +54,14 @@ class DictParser(configparser.ConfigParser):
             d[k] = dict(d[k])
         return d
 
+
 def parse_knob_config():
     from performance_graphembedding_checkpoint import config_dict
     _knob_config = config_dict["knob_config"]
     for key in _knob_config:
         _knob_config[key] = json.loads(str(_knob_config[key]).replace("\'", "\""))
     return _knob_config
+
 
 class Database:
     def __init__(self, server_name='postgresql'):
@@ -111,12 +149,12 @@ class Database:
 
             for i in range(len(self.knob_names)):
                 value = result[0]["@@%s" % self.knob_names[i]] if result[0]["@@%s" % self.knob_names[i]] != 0 else \
-                self.knob_config[self.knob_names[i]]["max_value"]  # not limit if value equals 0
+                    self.knob_config[self.knob_names[i]]["max_value"]  # not limit if value equals 0
 
                 # print(value, self.knob_config[self.knob_names[i]]["max_value"], self.knob_config[self.knob_names[i]]["min_value"])
                 state_list = np.append(state_list, value / (
-                            self.knob_config[self.knob_names[i]]["max_value"] - self.knob_config[self.knob_names[i]][
-                        "min_value"]))
+                        self.knob_config[self.knob_names[i]]["max_value"] - self.knob_config[self.knob_names[i]][
+                    "min_value"]))
             cursor.close()
             conn.close()
         except Exception as error:

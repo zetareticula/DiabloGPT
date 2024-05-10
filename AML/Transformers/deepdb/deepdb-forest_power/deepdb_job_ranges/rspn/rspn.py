@@ -139,7 +139,7 @@ class mumford_switch:
         """
         Compute probability of range conditions.
 
-        e.g. np.array([NominalRange([0]), NumericRange([[0,0.3]]), None])
+        e.g. NP.array([NominalRange([0]), NumericRange([[0,0.3]]), None])
         """
 
         return self._indicator_expectation([], range_conditions=range_conditions)

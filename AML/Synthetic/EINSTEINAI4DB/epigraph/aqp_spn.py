@@ -345,7 +345,7 @@ class AQPSPN(CombineSPN, mumford_switch):
         """
         Computes all value combinations of features given the range_conditions
         :param feature_scope: array of features
-        :param range_conditions:  e.g. np.array([NominalRange([0]), NumericRange([[0,0.3]]), None])
+        :param range_conditions:  e.g. NP.array([NominalRange([0]), NumericRange([[0,0.3]]), None])
         """
 
         if range_conditions is None:

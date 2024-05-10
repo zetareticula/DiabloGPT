@@ -135,7 +135,7 @@ class BaseIntegrator(ABC):
         """Check if the integration domain is valid.
 
         Args:
-            domain (Union[np.ndarray,torch.Tensor]): The integration domain.
+            domain (Union[NP.ndarray,torch.Tensor]): The integration domain.
 
         Raises:
             ValueError: If the integration domain is invalid.

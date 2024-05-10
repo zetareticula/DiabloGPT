@@ -826,8 +826,8 @@ class SPNEnsemble:
             #                                             exploit_incoming_multipliers=exploit_incoming_multipliers)
             #
             #     bernoulli_p = cardinalities / full_join_size
-            #     bernoulli_stds = full_join_size * np.sqrt(bernoulli_p * (1 - bernoulli_p) / 10000000)
-            #     cardinality_stds = np.clip(cardinality_stds, bernoulli_stds, np.inf)
+            #     bernoulli_stds = full_join_size * NP.sqrt(bernoulli_p * (1 - bernoulli_p) / 10000000)
+            #     cardinality_stds = NP.clip(cardinality_stds, bernoulli_stds, NP.inf)
 
         def build_confidence_interval(prediction, confidence_interval_std):
 

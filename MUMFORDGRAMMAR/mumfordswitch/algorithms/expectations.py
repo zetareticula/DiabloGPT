@@ -2,10 +2,18 @@ import logging
 from time import perf_counter
 
 import numpy as np
-from mumford_switch.code_generation.convert_conditions import convert_range
-from mumford_switch.structure.base import Sum
-from FACE.algorithms.Inference import likelihood
-from FACE.structure.Base import Product
+# from mumford_switch.code_generation.convert_conditions import convert_range
+# from mumford_switch.structure.base import Sum
+# from FACE.algorithms.Inference import likelihood
+# from FACE.structure.Base import Product
+
+# from FACE.algorithms.Inference import likelihood
+#
+#
+# # from FACE.algorithms.Inference import likelihood
+# from FACE.structure.Base import Product, Sum
+#
+
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +27,8 @@ def expectation(FACE, feature_scope, inverted_features, ranges, node_expectation
         The conditional expectation would be E[1_{conditions} * X_feature_scope]/P(conditions)
     """
 
-    # evidence_scope = set([i for i, r in enumerate(ranges) if not np.isnan(r)])
+    # evidence_scope = set([i for i, r in enumerate(ranges) if not NP.isnan(r)])
+    global parameters
     evidence_scope = set([i for i, r in enumerate(ranges[0]) if r is not None])
     evidence = ranges
 

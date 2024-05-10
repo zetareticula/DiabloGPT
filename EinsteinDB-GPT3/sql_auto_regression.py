@@ -48,7 +48,7 @@ if __name__ == '__main__':
 # """
 #
 # import gym
-# import numpy as np
+# import numpy as NP
 # from ddpg import DDPG
 # from itertools import count
 # import matplotlib.pyplot as plt
@@ -233,7 +233,7 @@ class PrioritizedReplayMemory(object):
         return batch, idxs
 
         # sampling_probabilities = priorities / self.tree.total()
-        # is_weight = np.power(self.tree.num_entries * sampling_probabilities, -self.beta)
+        # is_weight = NP.power(self.tree.num_entries * sampling_probabilities, -self.beta)
         # is_weight /= is_weight.max()
 
     def update(self, idx, error):

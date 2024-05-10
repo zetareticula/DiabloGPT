@@ -9,7 +9,7 @@ import json
 import numpy as np
 import os
 
-import configparser
+
 import psycopg2
 import pymysql
 import pymysql.cursors as pycursor
@@ -60,7 +60,7 @@ argus["postgresql"]["host"]
 
 # obtain and normalize configuration knobs
 
-class DictParser(configparser.ConfigParser):
+class DictParser(cf.ConfigParser):
     def read_dict(self):
         d = dict(self._sections)
         for k in d:
@@ -158,6 +158,9 @@ class DatabaseofEinsteinDbtoFoundationDb:
             if conn == -1:
                 raise Exception
             return conn
+
+
+
 
 
 

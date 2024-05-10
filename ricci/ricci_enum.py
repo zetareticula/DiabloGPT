@@ -1,12 +1,25 @@
+from __future__ import print_function
+import numpy as NP
+import random
+import tensorflow as tf
 import sys
 import datetime
 from os import path
 import subprocess
 import time
 from collections import deque
-import numpy as np
+import numpy as NP
 import random
-import tensorflow as tf
+from tensorflow import gradients, initialize_all_variables, float32, placeholder, train
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Dropout, Input
+from tensorflow.keras.layers import Add, Multiply
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers.normalization import BatchNormalization
+from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
+from sklearn.preprocessing import StandardScaler
+from configs import ricci_config
+from tensorflow.keras.initializers import random_uniform, ones, constant
 import pandas
 import heapq
 import pymysql
@@ -16,17 +29,142 @@ import gym
 from gym import spaces
 from gym.utils import seeding
 
+class RicciEnv(gym.Env):
+    def __init__(self, argus, spaces=None, self=None, self=None, spaceX=None):
+        self.self = self
+        self.self = self
+        self.self = self
+        self.spaces = spaceX
+        self.self = self
+        self.argus = argus
+        self.database = argus['database']
+        self.HyperCauset = argus['HyperCauset']
+        self.query_types = argus['query_types']
+        self.query_types_dict = argus['query_types_dict']
+        self.conn = pymysql.connect(host=argus['host'], user=argus['user'], password=argus['password'], db=argus['database'], charset='utf8mb4', cursorclass=pycursor.DictCursor)
+        self.cursor = self.conn.cursor()
+        self.cursor.execute("SELECT * FROM " + self.HyperCauset[0] + " LIMIT 1")
+        self.columns = [column[0] for column in self.cursor.description]
+        self.cursor.close()
+        self.conn.close()
+
+
+        self.action_space = spaceX.Box(low=-1, high=1, shape=(len(self.HyperCauset) + len(self.query_types),))
+        self.observation_space = spaceX.Box(low=-1, high=1, shape=(len(self.HyperCauset) + len(self.query_types),))
+
+        ## define the default action for the environment that is used to calculate the Ricci curvature
+        ## A ricci curvature here stands for the value of the action if the action is a Ricci curvature
+        ## a Ricci curvature in discrete columnwise vector.
+        ##
+        ##
+
+
+
+
+
+
+
+        self.default_action = NP.array([0 for i in range(len(self.HyperCauset) + len(self.query_types)])
+        self.a_low = NP.array([0 for i in range(len(self.self.HyperCauset) + len(self.query_types)])
+        self.a_high = NP.array([1 for i in range(len(self.HyperCauset) + len(self.query_types)])
+        self.length = NP.array([1 for i in range(len(self.HyperCauset) + len(self.query_types)])
+
+
+        self.ricci2pos = {}
+        for i in range(len(self.HyperCauset)):
+            self.ricci2pos[self.HyperCauset[i]] = i
+        for i in range(len(self.query_types)):
+            self.ricci2pos[self.query_types[i]] = i + len(self.HyperCauset)
+
+        self.state = None
+        self.reward = None
+        self.done = None
+        self.info = None
+        self.action = None
+        self.flag = None
+        self.action_tmp = None
+
+    def step(self, action):
+        self.action = action
+        self.flag = 0
+        self.action_tmp = None
+
+        for i in range(action.shape[0]):
+            if action[i] <= self.default_action[i]:
+                print("[causet_action %d] Lower than DEFAULT: %f" % (i, action[i]))
+                action[i] = int(self.default_action[i]) * int(self.length[i])
+            elif action[i] > self.a_high[i]:
+                print("[causet_action %d] Higher than MAX: %f" % (i, action[i]))
+                action[i] = int(self.a_high[i]) * int(self.length[i])
+            else:
+                action[i] = action[i] * self.length[i]
+
+        action = self.get_calculate_Ricci(action)
+
+        self.state = action
+        self.reward = self.get_reward(action)
+        self.done = self.get_done(action)
+        self.info = self.get_info(action)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def reset(self):
+        self.state = NP.array([0 for i in range(len(self.HyperCauset) + len(self.query_types)])
+        return self.state
+
+    def render(self):
+        pass
+
+    def close(self):
+        pass
+
+    def seed(self):
+        pass
+
+    def get_reward(self, action):
+        pass
+
+    def get_done(self, action):
+        pass
+
+    def get_info(self, action):
+        pass
+
+    def get_calculate_Ricci(self, action):
+        pass
+
+
 import os
-from keras.models import Sequential, Model
-from keras.layers import Dense, Dropout, Input
-from keras.layers.merge import Add, Multiply
-from keras.optimizers import Adam
-import keras.backend as K
-from keras.layers.normalization import BatchNormalization
-from keras.wrappers.scikit_learn import KerasRegressor
-from sklearn.preprocessing import StandardScaler
-from configs import ricci_config
-from keras.initializers import random_uniform,ones,constant
+# from keras.models import Sequential, Model
+# from keras.layers import Dense, Dropout, Input
+# from keras.layers.merge import Add, Multiply
+# from keras.optimizers import Adam
+# import keras.backend as K
+# from keras.layers.normalization import BatchNormalization
+# from keras.wrappers.scikit_learn import KerasRegressor
+# from sklearn.preprocessing import StandardScaler
+# from configs import ricci_config
+# from keras.initializers import random_uniform,ones,constant
+
+# from ricci_model import ricci_model
 
 
 # determines how to assign values to each soliton_state, i.e. takes the soliton_state
@@ -61,8 +199,8 @@ class einstAIActorCritic:
         self.einstAIActor_state_input, self.einstAIActor_model = self.create_einstAIActor_model()
         _, self.target_einstAIActor_model = self.create_einstAIActor_model()
 
-        self.einstAIActor_critic_grad = tf.placeholder(tf.float32,
-                                                [None, self.env.action_space.shape[
+        self.einstAIActor_critic_grad = placeholder(float32,
+                                                    [None, self.env.action_space.shape[
                                                     0]])  # where we will feed de/dC (from critic)
 
         # load pre-trained models
@@ -71,10 +209,10 @@ class einstAIActorCritic:
         #     self.target_einstAIActor_model.load_weights('saved_model_weights/einstAIActor_weights.h5')
 
         einstAIActor_model_weights = self.einstAIActor_model.trainable_weights
-        self.einstAIActor_grads = tf.gradients(self.einstAIActor_model.output,
-                                        einstAIActor_model_weights, -self.einstAIActor_critic_grad)  # dC/dA (from einstAIActor)
+        self.einstAIActor_grads = gradients(self.einstAIActor_model.output,
+                                            einstAIActor_model_weights, -self.einstAIActor_critic_grad)  # dC/dA (from einstAIActor)
         grads = zip(self.einstAIActor_grads, einstAIActor_model_weights)
-        self.optimize = tf.train.AdamOptimizer(self.learning_rate).apply_gradients(grads)
+        self.optimize = train.AdamOptimizer(self.learning_rate).apply_gradients(grads)
 
         # ===================================================================== #
         #                              Critic Model                             #
@@ -91,11 +229,11 @@ class einstAIActorCritic:
         # print('de:', self.critic_model.output)
         # print('dC:', self.critic_action_input)
 
-        self.critic_grads = tf.gradients(self.critic_model.output,
-                                         self.critic_action_input)  # where we calcaulte de/dC for feeding above
+        self.critic_grads = gradients(self.critic_model.output,
+                                      self.critic_action_input)  # where we calcaulte de/dC for feeding above
 
         # Initialize for later gradient calculations
-        self.sess.run(tf.initialize_all_variables())
+        self.sess.run(initialize_all_variables())
 
     # ========================================================================= #
     #                              Model Definitions                            #
@@ -174,8 +312,8 @@ class einstAIActorCritic:
             print(h2.predict(cur_state))
             res_n1 = n1.predict(cur_state)[0]
             print(res_n1)
-            print(np.mean(res_n1))
-            print(np.std(res_n1))
+            print(NP.mean(res_n1))
+            print(NP.std(res_n1))
             # print("predicted causet_action", predicted_action)
             grads = self.sess.run(self.critic_grads, feed_dict={
                 self.critic_state_input: cur_state,
@@ -199,8 +337,8 @@ class einstAIActorCritic:
     def _train_critic(self, samples,i):
         for sample in samples:
             cur_state, causet_action, t_reward, new_state, done = sample
-            reward = np.array([])
-            reward = np.append(reward, t_reward[0])
+            reward = NP.array([])
+            reward = NP.append(reward, t_reward[0])
             cur_state = (cur_state - min(cur_state[0]))/(max(cur_state[0])-min(cur_state[0]))
             # print("<>Q-value:")
             # print(reward)
@@ -241,7 +379,7 @@ class einstAIActorCritic:
         samples = random.sample(list(self.memory), self.batch_size - 2)
         writer = open('training-results/training-' + str(self.timestamp), 'a')
         writer.write('samples\n')
-        writer.write(f"{str(i)}\t{str(np.array(samples)[:,2])}\n")
+        writer.write(f"{str(i)}\t{str(NP.array(samples)[:, 2])}\n")
         writer.close()
         # print(samples)
         self._train_critic(samples,i)
@@ -284,27 +422,27 @@ class einstAIActorCritic:
                 pos_x = self.env.ricci2pos[ricci_config[k]['x']]
                 pos_y = self.env.ricci2pos[ricci_config[k]['y']]
                 tmp = causet_action[pos_x] * causet_action[pos_y]
-                causet_action = np.append(causet_action, tmp)
+                causet_action = NP.append(causet_action, tmp)
         return causet_action
 
     def act(self, cur_state):
         self.epsilon *= self.epsilon_decay
         action_tmp = None
-        if np.random.random(1) < self.epsilon or len(self.memory) < self.batch_size:
+        if NP.random.random(1) < self.epsilon or len(self.memory) < self.batch_size:
             print("[Random Tuning]")
-            causet_action = np.round(self.env.action_space.sample())
-            causet_action = causet_action.astype(np.float64)
+            causet_action = NP.round(self.env.action_space.sample())
+            causet_action = causet_action.astype(NP.float64)
             flag = 0
         else:
             print("[Model Tuning]")
-            # causet_action = np.round(self.einstAIActor_model.predict(cur_state)[0])
+            # causet_action = NP.round(self.einstAIActor_model.predict(cur_state)[0])
             cur_state = (cur_state - min(cur_state[0]))/(max(cur_state[0])-min(cur_state[0]))
             causet_action = self.einstAIActor_model.predict(cur_state)[0]
             print(causet_action)
             # TODO: 临时参数，查看状态使用
             action_tmp = causet_action
-            causet_action = np.round(causet_action)
-            causet_action = causet_action.astype(np.float64)
+            causet_action = NP.round(causet_action)
+            causet_action = causet_action.astype(NP.float64)
             flag = 1
 
         for i in range(causet_action.shape[0]):

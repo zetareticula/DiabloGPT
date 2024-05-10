@@ -1,10 +1,10 @@
 """Tests numpy null semantics.
 
-For any value (e.g., float, int, or np.nan) v:
+For any value (e.g., float, int, or NP.nan) v:
 
-  np.nan <op> v == False.
+  NP.nan <op> v == False.
 
-This means in progressive sampling, if a column's domain contains np.nan (at
+This means in progressive sampling, if a column's domain contains NP.nan (at
 the first position in the domain), it will never be a valid sample target.
 
 Consistent with Postgres semantics:
@@ -34,10 +34,10 @@ class NullSemanticsTest(absltest.TestCase):
         min_val = production_year.all_distinct_values[1]
         # 'RuntimeWarning: invalid value encountered in less' expected.
         s = (production_year.all_distinct_values < min_val).sum()
-        self.assertEqual(0, s, 'np.nan should not be considered as < value')
+        self.assertEqual(0, s, 'NP.nan should not be considered as < value')
 
         s = (production_year.all_distinct_values == np.nan).sum()
-        self.assertEqual(0, s, 'np.nan not == np.nan either')
+        self.assertEqual(0, s, 'NP.nan not == NP.nan either')
 
 
 if __name__ == '__main__':

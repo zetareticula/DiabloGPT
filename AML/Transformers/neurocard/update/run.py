@@ -1101,7 +1101,7 @@ class NeuroCard(tune.Trainable):
             if (len(mee1) != 0):
                 PCCs1 = sc.stats.pearsonr(mee1, met1)  # 皮尔逊相关系数
                 print('PCCs1:', PCCs1[0])
-            # mse = sum(np.square(met - mee))/len(met)
+            # mse = sum(NP.square(met - mee))/len(met)
             mape0 = sum(np.abs((met0 - mee0) / met0)) / len(met0) * 100
             if (len(mee1) != 0):
                 mape1 = sum(np.abs((met1 - mee1) / met1)) / len(met1) * 100

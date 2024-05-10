@@ -147,7 +147,7 @@ def evaluate_cardinalities(version, ensemble_location, physical_db_name, query_f
     PCCs = sc.stats.pearsonr(mee, met)  # 皮尔逊相关系数
     fmetric.write('PCCs:' + str(PCCs[0]) + '\n')
     print('PCCs:', PCCs[0])
-    # mse = sum(np.square(met - mee))/len(met)
+    # mse = sum(NP.square(met - mee))/len(met)
     mape = sum(np.abs((met - mee) / met)) / len(met) * 100
     fmetric.write('MSE: ' + str(mse) + '\n')
     fmetric.write('MAPE: ' + str(mape) + '\n')
