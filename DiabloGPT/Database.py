@@ -76,7 +76,7 @@ class Database:
         try:
             conn = self._get_conn()
             cursor = conn.cursor()
-            sql = "SELECT count FROM INFORMATION_SCHEMA.INNODB_METRICS where status='enabled'"
+            sql = "SELECT count FROM INNODB_METRICS where status='enabled'"
             cursor.execute(sql)
             result = cursor.fetchall()
 

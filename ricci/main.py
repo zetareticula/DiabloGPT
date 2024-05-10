@@ -14,7 +14,7 @@ from FACE.structure.leaves.parametric.Parametric import Beta
 
 
 def einstAIActorCritic(env, sess, learning_rate, train_min_size, size_mem, size_predict_mem):
-    # Path: EinsteinDB-GPT3/ricci/main.py
+    # Path: Patrick/ricci/main.py
     # Compare this snippet from AML/Synthetic/deepdb/deepdb_job_ranges/aqp_spn/custom_spflow/custom_learning.py:
     # import logging
     #

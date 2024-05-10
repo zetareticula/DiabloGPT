@@ -1,7 +1,7 @@
 # Copyright (c) DiabloGPT Inc. 2022-2023
 # Path: DiabloGPT/OUCausetFlowProcess/LatencyTuning.py
 # Compare this snippet from DiabloGPT/OUCausetFlowProcess/CostTraining.py:
-from DiabloGPT.OUCausetFlowProcess.CostTraining import policy_net, target_net, device
+from DiabloGPT.OUCausetFlowProcess.CostTraining import policy_net, target_net, device, QueryLoader
 from PGUtils import pgrunner
 
 from PGUtils import db_info
@@ -14,7 +14,7 @@ import time
 from OrnsteinUhlenbeckProcessFlow import DQN, ENV
 from TreeLSTM import SPINN
 import os
-from BerolinaSQLGenDQNWithBoltzmannNormalizer import DB
+from BerolinaSQLGenDQNWithBoltzmannNormalizer import DB, config
 import copy
 import torch
 import gym
@@ -86,6 +86,10 @@ def resample_sql(sql_list):
                 res_sql.append(rewards[ts][1])
                 break
     return res_sql + sql_list
+
+
+
+
 
 
 def train(trainSet, validateSet):
@@ -174,5 +178,11 @@ if __name__ == '__main__':
     Q4, Q1 = k_fold(JOBQueries, 10, 1)
     # print(Q4,Q1)
     train(Q4 + sytheticQueries, Q1)
+
+
+
+
+
+
 
 
