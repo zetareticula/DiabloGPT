@@ -17,7 +17,11 @@ import numpy as np
 
 import time
 import glob
+import configparser as cf
+from enum import IntEnum
+from itertools import count
 
+from sqlalchemy.sql.functions import user
 
 # # 1. Generate Workload Dataset
 
@@ -79,6 +83,10 @@ def parse_knob_config():
     return _knob_config
 
 
+# knob_config = parse_knob_config()
+
+
+
 
 
 
@@ -118,6 +126,7 @@ class DatabaseofEinsteinDbtoFoundationDb:
         except Exception as err:
             print("execute sql error:", err)
 
+
     def _get_conn(self):
         if self.server_name == 'mysql':
             sucess = 0
@@ -126,17 +135,17 @@ class DatabaseofEinsteinDbtoFoundationDb:
             while not sucess and count < 3:
                 try:
                     conn = pymysql.connect(host="
-                                             port=3306,
-                                             user="feng",
-                                             password="db10204",
-                                             db='INFORMATION_SCHEMA',
-                                             connect_timeout=36000,
-                                             cursorclass=pycursor.DictCursor)
-
-                    sucess = 1
+                                             port=(3306,
+                                                   user='karl'
+                                                    password='karl'
+                                                    db='INFORMATION_SCHEMA',
+                                                    connect_timeout=36000,
+                                                    cursorclass=pycursor.DictCursor) # zxn Modified.
+                       sucess = 1
                 except Exception as result:
                     count += 1
                     time.sleep(10)
+
             if conn == -1:
                 raise Exception
 

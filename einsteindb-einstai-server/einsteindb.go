@@ -3,14 +3,31 @@ package diablogpt
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"reflect"
+	"strings"
+	"fmt"
+	"database/sql"
+
+
+
+	"github.com/pingcap/errors"
+	"github.com/pingcap/log"
+	"github.com/pingcap/tidb/errno"
+	"github.com/pingcap/errors"
+
+	//milevadb
+
 )
 
-type TuneServer struct {
-	conn *sql.DB
+type int64 = int64 // int64 is a type alias for int64 type
+type string = string // string is a type alias for string type
 
+
+type Error struct {
+	Code int64
+	Msg  string
 
 }
-
 
 type Task struct {
 	Id         int64  `json:"id"`
@@ -47,14 +64,20 @@ var (
 	ErrUpdateDb = NewError(10002, "update db failed")
 	ErrInsertDb = NewError(10003, "insert db failed")
 
+
 )
+
+type DBInsert interface {
+	DBInsert(table string, model interface{}) error
+
+}
 
 func NewError(i int64, s string) *Error {
 	return &Error{
 		Code: i,
 		Msg:  s,
 	}
-}
+
 
 
 func (dapp *TuneServer) DBInsert(table string, model interface{}) error {
@@ -64,11 +87,18 @@ func (dapp *TuneServer) DBInsert(table string, model interface{}) error {
 		Msg:  i,
 	}
 
+
+	for i := 0; i < telems.NumField(); i++ {
+
 	if i == 10002 {
+
+		for i := 0; i < telems.NumField(); i++ {
 		return &Error{
 		Code: i,
 		Msg:  i,
 	}
+
+
 
 	if i == 10003 {
 		return &Error{
