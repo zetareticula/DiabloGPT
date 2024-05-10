@@ -13,11 +13,18 @@ import environment as environment
 import epoch as epoch
 from numpy.distutils.fcompiler import environment
 from past.builtins import xrange
+from torch import nn
+
+from AML.Transformers.stochastic_forager.src.cpp.qpsolver.cvxopt.examples.doc.chap9.gp import F
 
 import utils
 from AML.Transformers.bayesian.factorized_sampler.factorized_sampler import main
 from AML.Synthetic.naru import models
 from EINSTAI.OUCausetFlowProcess.CostTraining import config
+
+
+
+
 
 sys.path.append('../')
 
@@ -46,14 +53,24 @@ tconfig.phase = opt.phase
 
 
 def train():
-    # we need to save the model
-models = []
-for i in range(10):
-    model = DQN(tconfig)
-    models.append(model)
-    train()
+    #we need to save the model
+    print('Training...')
+    for epoch in range(tconfig['epoches']):
+        print('Epoch: ', epoch)
+        env = ReadEnv(tconfig)
+        state = env.reset()
+        for i in range(tconfig['num_steps']):
+            action = env.get_action(state)
+            next_state, reward, done, info = env.step(action)
+            model.store_transition(state, action, reward, next_state, done)
+            state = next_state
+            if done:
+                break
+        model.learn()
+        model.save_model()
+        env.close()
 
-    # we need to save the model
+    print('Training Done')
 
 
 def test():
@@ -66,8 +83,14 @@ def test():
         state = next_state
         if done:
             break
+
     env.close()
-    print('Testing Done')
+print('Testing Done')
+
+
+    # we need to save the model
+
+
 
 
 if tconfig.phase == 'train':
@@ -77,6 +100,26 @@ elif tconfig.phase == 'test':
 else:
     print('Unknown phase: ', tconfig.phase)
 
+
+
+def train():
+    print('Training...')
+    for epoch in range(tconfig['epoches']):
+        print('Epoch: ', epoch)
+        env = ReadEnv(tconfig)
+        state = env.reset()
+        for i in range(tconfig['num_steps']):
+            action = env.get_action(state)
+            next_state, reward, done, info = env.step(action)
+            model.store_transition(state, action, reward, next_state, done)
+            state = next_state
+            if done:
+                break
+        model.learn()
+        model.save_model()
+        env.close()
+    print('Training Done')
+
 def test():
     print('Testing...')
     env = ReadEnv(tconfig)
@@ -91,7 +134,6 @@ def test():
     print('Testing Done')
 
 
-def train():
 
 
 
@@ -280,7 +322,7 @@ if opt.phase == 'train':
     with open(opt.sa_path, 'rb') as f:
         data = pickle.load(f)
 
-    for epoch in xrange(opt.epoches):
+    for epoch in (opt.epoches):
 
         random.shuffle(data)
         num_samples = len(data)
@@ -292,7 +334,7 @@ if opt.phase == 'train':
 
         _loss = 0
 
-        for i in xrange(n_train_samples/batch_size):
+        for i in (n_train_samples/batch_size):
 
             batch_data = train_data[i*batch_size: (i+1)*batch_size]
             batch_states = [x[0].tolist() for x in batch_data]
@@ -307,7 +349,7 @@ if opt.phase == 'train':
             
         if epoch % 10 == 0:
             _loss = 0
-            for i in xrange(n_test_samples/batch_size):
+            for i in (n_test_samples/batch_size):
                 batch_data = test_data[i*batch_size: (i+1)*batch_size]
                 batch_states = [x[0].tolist() for x in batch_data]
                 batch_actions = [x[1].tolist() for x in batch_data]

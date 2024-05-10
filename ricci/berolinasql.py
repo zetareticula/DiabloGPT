@@ -367,6 +367,8 @@ class EinsteinMySQLdb:
 
 
 class database:
+
+
     # define the database connection
     def __init__(self, dbhost=None, dbport=None, dbuser=None, dbpwd=None, dbname=None):
         self._dbname = dbname
@@ -375,6 +377,13 @@ class database:
         self._dbpassword = dbpwd
         self._dbport = dbport
         self._logger = logger
+self._conn = None
+self._cursor = None
+self._connect()
+
+    # connect to the database
+    def _connect(self):
+
 
         self._conn = self.connectMySQL()
         if (self._conn):

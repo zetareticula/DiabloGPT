@@ -1,18 +1,12 @@
-package einsteindb
+package diablogpt
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"time"
 
-	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
-)
-
-const (
-	// ErrNeedRestart is the error that need restart
-	ErrNeedRestart = errors.New("need restart")
+	tconf "github.com/robfig/config"
 )
 
 func (dapp *TuneServer) Run() {

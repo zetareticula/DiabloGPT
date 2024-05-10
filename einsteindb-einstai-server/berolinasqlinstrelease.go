@@ -1,4 +1,4 @@
-package einsteindb-einstai-server
+package diablogpt-einstai-server
 
 
 type BerolinaSQLInst struct {

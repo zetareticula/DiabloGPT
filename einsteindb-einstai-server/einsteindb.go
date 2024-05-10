@@ -1,18 +1,23 @@
 
-
-// Path: EinsteinDB-GPT3/einsteindb-einstai-server/einsteindb.go
-package einsteindb
+package diablogpt
 
 import (
-	"database/sql"
+	_ "database/sql"
+	_"errors"
 	"fmt"
 	"reflect"
 	"strings"
-	_ "time"
 
 	_ "github.com/go-sql-driver/mysql"
-
+	"github.com/jmoiron/sqlx"`
+`
+	"github.com/pingcap/log"
+	"github.com/pingcap/log/zap"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"github.com/jmoiron/sqlx"
+	"github.com/pingcap/log"
+
 
 )
 
@@ -23,6 +28,77 @@ var (
 	ErrInsertDb = NewError(10003, "insert db failed")
 
 )
+
+func NewError(i , i ) interface{
+	if i == 10001 {
+		return &Error{
+		Code: i,
+		Msg:  i,
+	}
+
+	if i == 10002 {
+		return &Error{
+		Code: i,
+		Msg:  i,
+	}
+
+	if i == 10003 {
+		return &Error{
+		Code: i,
+		Msg:  i,
+	}
+}
+return &Error{
+		Code: i,
+		Msg:  i,
+	}
+}
+
+
+}
+type int64 struct {
+	Code int64
+	Msg  string
+}
+
+type Error struct {
+	Code int64
+	Msg  string
+}
+
+func (e *Error) Error() string {
+	return fmt.Sprintf("code:%d, msg:%s", e.Code, e.Msg)
+
+}
+
+func (e *Error) AddErrMsg(format string, args ...interface{}) *Error {
+	e.Msg = fmt.Sprintf(format, args...)
+	return e
+}
+
+type error struct {
+	Code int64
+	Msg  string
+}
+
+func (e *Error) Error() string {
+	return fmt.Sprintf("code:%d, msg:%s", e.Code, e.Msg)
+
+}
+
+func (e *Error) AddErr(err error) *Error {
+	e.Msg = err.Error()
+	return e
+}
+
+func (e *Error) AddErrs(errs ...error) *Error {
+	for _, err := range errs {
+		e.Msg += err.Error()
+	}
+	return e
+}
+
+
 
 type QueryCount struct {
 	Count int64

@@ -1,18 +1,9 @@
-package einsteindb
+package diablogpt
 
 import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-
-	. "git.code.oa.com/gocdb/base/public/err"
-	. "git.code.oa.com/gocdb/base/public/log"
-	. "git.code.oa.com/gocdb/base/public/prot"
-	. "git.code.oa.com/gocdb/base/public/prot/tune"
-	. "git.code.oa.com/gocdb/base/public/prot/tune/task"
-	. "git.code.oa.com/gocdb/base/public/prot/tune/task/result"
-
-	. "git.code.oa.com/gocdb/base/public/prot/tune/task/result"
 )
 
 //CHANGELOG:  We have to use the same task_id to update the task

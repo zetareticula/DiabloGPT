@@ -3,7 +3,50 @@ import os
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
-import base
+import seaborn as sns
+
+def cal_cost(edbname):
+    root_path = os.path.abspath('.') + '/' + edbname
+    metric_path = root_path + '/' + '{0}_metric'.format(edbname)
+    query_cost = pd.read_csv(metric_path, index_col=0)
+    can_execute_query = query_cost.loc[query_cost['can_execute'] == True]
+    can_execute_query_count = can_execute_query.shape[0]
+    query_cost_equal_zero_count = can_execute_query.loc[can_execute_query['cost'] == 0].shape[0]
+    print('can execute query count:', can_execute_query_count)
+    print('query cost equal zero count:', query_cost_equal_zero_count)
+    print('query cost equal zero rate:', query_cost_equal_zero_count / can_execute_query_count)
+    # 统计cost分布
+    cost = can_execute_query.loc[can_execute_query['cost'] != 0, 'cost']
+    cost = cost.sort_values()
+    cost = cost.reset_index(drop=True)
+    cost = cost / 1000
+    cost = cost.astype(np.int)
+    cost = cost.value_counts()
+    cost = cost.sort_index()
+    cost = cost.reset_index()
+    cost.columns = ['cost', 'count']
+    cost['rate'] = cost['count'] / can_execute_query_count
+    cost.to_csv(root_path + '/cost_distribute', index=False)
+    print(cost)
+    plt.plot(cost['cost'], cost['rate'])
+    plt.show()
+
+
+def cal_duplicate_rate(edbname):
+    root_path = os.path.abspath('.') + '/' + edbname
+    query_file_list = os.listdir(root_path + '/query')
+    queries = []
+    for query_file in query_file_list:
+        path = root_path + '/' + query_file
+        with open(path, 'r') as f:
+            query = f.read()
+            queries.append(query)
+            queries.append(f.read())
+    queries = set(queries)
+    print('duplicate rate:', 1 - len(queries) / len(query_file_list))
+
+
+
 
 
 def cal_statistic(edbname):
@@ -207,3 +250,11 @@ def cal_statistic(edbname):
 
 # print(cal_point_accuracy('/home/lixizhang/learnSQL/sqlsmith/tpch/tpch10000_0', 0, 10, 'card'))
 # print(cal_range_accuracy('/home/lixizhang/learnSQL/sqlsmith/tpch/tpch10000_0', (1000, 2000), 'cost'))
+
+
+
+
+
+
+
+

@@ -5,25 +5,21 @@
 
 import math
 import random
-import torchfold
-import torch.nn.functional as F
-from torch import nn
-import torchvision.transforms as T
-import torch
 from collections import namedtuple
-from sqlSample import JoinTree
-import torch.optim as optim
-import numpy as np
-from math import log
 from itertools import count
-from PGUtils import pgrunner
-from PGUtils import db_info
-from sqlSample import sqlInfo
-import json
-import os
-import sys
+from math import log
 
+import torch
+import torch.nn.functional as F
+import torch.optim as optim
+import torchfold
+from torch import nn
 from torch.nn import init
+
+from PGUtils import db_info
+from PGUtils import pgrunner
+from sqlSample import JoinTree
+
 
 def init_weights(m):
     if type(m) == nn.Linear:
@@ -101,7 +97,8 @@ class ENV(object):
                 tree_state.append(self.sel.encode_tree_fold(fold,idx))
             #         res = torch.cat(tree_state,dim = 0)
         return tree_state
-        return fold.add('logits',tree_state,self.sel.join_matrix)
+
+
 
 
 
@@ -127,7 +124,6 @@ class ENV(object):
                     action_value_list.append((self.actionValue(one_join[0],one_join[1],model),one_join))
         return action_value_list
     def reward_new(self,):
-        from math import e
         if self.sel.total+1 == len(self.sel.from_table_list):
             if self.run_mode == False:
                 return self.sel.plan2Cost()/self.sel.sqlt.getDPlantecy(), True
@@ -135,6 +131,45 @@ class ENV(object):
                 return self.sel.getResult(),True
         else:
             return 0,False
+
+    def reward(self):
+        if self.sel.total+1 == len(self.sel.from_table_list):
+            return self.sel.plan2Cost()/self.sel.sqlt.getDPlantecy(), True
+        else:
+            return 0,False
+
+class homotopy(nn.Module):
+    ##We need to seed the random number generator to ensure that the results are reproducible.
+    torch.manual_seed(0)
+    def __init__(self,):
+        super(homotopy, self).__init__()
+        self.fc1 = nn.Linear(2, 10)
+        self.fc2 = nn.Linear(10, 1)
+
+    def forward(self, x):
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+class DQN(nn.Module):
+    def __init__(self):
+        super(DQN, self).__init__()
+        self.fc1 = nn.Linear(2, 10)
+        self.fc2 = nn.Linear(10, 1)
+
+    def forward(self, x):
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+
+
+
+
+
+
+
+
 
 
 
@@ -267,7 +302,6 @@ class DQN:
                     my_cost += reward*pg_cost
                     valInfo[sql.filename] = (lalias,thisTime,reward*pg_cost,pg_cost)
                     break
-        import json
         lr = len(rewards)
         from math import e
         print("MRC",sum(rewards)/lr,"GMRL",e**(mes/lr),"SMRC",my_cost/DP_cost)

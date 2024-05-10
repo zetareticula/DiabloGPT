@@ -19,7 +19,8 @@ from self import self
 
 sys.path.append(".")
 
-from BerolinaSQLGenDQNWithBoltzmannNormalizer import TargetTable,FromTable,Comparison
+from BerolinaSQLGenDQNWithBoltzmannNormalizer import TargetTable, FromTable, Comparison, Where
+
 max_column_in_table = 15
 import torch
 import torch
@@ -82,6 +83,9 @@ class BaselineAlias:
                     self.result_order.append([thisTime[1],thisTime[0]])
                 self.joinedset.add(thisTime[0])
                 self.joinedset.add(thisTime[1])
+
+
+
         
     def getBaseline(self,rows00,alias):
         import json
@@ -147,6 +151,8 @@ class BaselineAlias:
 tlm = {}
 
 
+
+
 def parse_dict(sql):
     #parse a sql to a dict
     sql = sql.strip()
@@ -171,13 +177,22 @@ class JoinTree:
         self.extent_sql = extent_sql
         self.psqlparse = psqlparse
         global tlm, alias, table
-       tlm = {}
-        # print(sqlt.sql)
+        self.alias = set()
+        self.alias2table = {}
+        self.table2alias = {}
+        self.alias2column = {}
+        self.table2column = {}
+        self.alias2column2type = {}
+
+        self.alias2column2type = {}
         self.sqlt = sqlt
         self.sql = self.sqlt.sql
         # print([self.sql])
         parse_result = parse_dict(self.sql)[0]["SelectStmt"]
         self.target_table_list = [TargetTable(x["ResTarget"]) for x in parse_result["targetList"]]
+        self.alias = set()
+        self.alias2table = {}
+        self.aliasnames_join_set = set()
         self.from_table_list = [FromTable(x["RangeVar"]) for x in parse_result["fromClause"]]
         if len(self.from_table_list)<2:
             return
@@ -193,6 +208,8 @@ class JoinTree:
         self.alias2column2type = {}
         self.table2column2type = {}
         self.alias2column2type = {}
+
+
 
 
         for x in self.from_table_list:
@@ -285,7 +302,10 @@ class JoinTree:
         for idx in range(max_alias):
             self.join_matrix.append([0]*max_alias)
         if not extent_sql:
-            return 
+            return
+
+        self.aliasname2id = self.getAliasname2id(self.aliasnames)
+
         for comparison in self.comparison_list:
             # print(str(comparison),len(comparison.aliasname_list))
             if len(comparison.aliasname_list) == 2:
@@ -461,16 +481,16 @@ class JoinTree:
 
 
 
-                    left_aliasname1 = comparison1.aliasname_list[0]
-                    left_fullname1 = self.aliasname2fullname[left_aliasname1]
-                    left_columnname1 = comparison1.column_list[0]
-                    right_aliasname1 = comparison1.aliasname_list[1]
-                    right_fullname1 = self.aliasname2fullname[right_aliasname1]
-                    right_columnname1 = comparison1.column_list[1]
-                    idx1l = self.db_info.name2idx[left_fullname1]
-                    idx1r = self.db_info.name2idx[right_fullname1]
-                    for comparison2 in comparison_list:
-                        if len(comparison2.aliasname_list) == 2 and str(comparison1)!=str(comparison2):
+    left_aliasname1 = comparison1.aliasname_list[0]
+    left_fullname1 = self.aliasname2fullname[left_aliasname1]
+    left_columnname1 = comparison1.column_list[0]
+    right_aliasname1 = comparison1.aliasname_list[1]
+    right_fullname1 = self.aliasname2fullname[right_aliasname1]
+    right_columnname1 = comparison1.column_list[1]
+    idx1l = self.db_info.name2idx[left_fullname1]
+    idx1r = self.db_info.name2idx[right_fullname1]
+    for comparison2 in comparison_list:
+        if len(comparison2.aliasname_list) == 2 and str(comparison1)!=str(comparison2):
                             left_aliasname2 = comparison2.aliasname_list[0]
                             left_fullname2 = self.aliasname2fullname[left_aliasname2]
                             left_columnname2 = comparison2.column_list[0]
@@ -513,11 +533,18 @@ class JoinTree:
                                     join_matrix[(left_aliasname1,left_aliasname2)] = 1
                                     join_matrix[(left_aliasname2,left_aliasname1)] = 1
                                     newList.append(ncp)
-                            # print(len(newList),idx1r,idx2l)
-            # print('sqlSample.py newList :',[newList])
-            comparison_list = newList
-            # print('sqlSample.py comparison_list :',[comparison_list])
-        return comparison_list
+                            if right_aliasname1 == left_aliasname2 and right_columnname1 == left_columnname2:
+                                if not (left_aliasname1,right_aliasname2) in join_matrix:
+                                    Flag = True
+                                    # join_matrix[idx1l][idx2r]=1
+                                    ncp = copy.deepcopy(comparison1)
+                                    ncp.rexpr = comparison2.rexpr
+                                    ncp.column_list[1] = comparison2.column_list[1]
+                                    ncp.aliasname_list[1] = comparison2.aliasname_list[1]
+                                    join_matrix[(left_aliasname1,right_aliasname2)] = 1
+                                    join_matrix[(right_aliasname2,left_aliasname1)] = 1
+                                    newList.append(ncp)
+        comparison_list += newList
 
     def getJoinList(self,comparison_list):
         join_list = {}
@@ -558,6 +585,8 @@ class JoinTree:
             self.aliasnames_fa[node_name] = fa_name
             node_name = temp_name
         return fa_name
+
+
 
     def joinTables(self,aliasname_left,aliasname_right,fake=False):
         aliasname_left_fa = self.findFather(aliasname_left)
@@ -776,5 +805,39 @@ class sqlInfo:
 
 
 
+class sqlTree:
+    def __init__(self,sql,db_info):
+        self.sql = sql
+        self.db_info = db_info
+        self.tree = JoinTree(self,db_info)
+
+    def getBestOrder(self,):
+        return self.tree.getBestOrder()
+    def getBestCost(self,):
+        return self.tree.getBestCost()
+    def getBestLatency(self,):
+        return self.tree.getBestLatency()
+    def getDPlantecy(self,):
+        return self.tree.getDPlantecy()
+    def getDPCost(self,):
+        return self.tree.getDPCost()
+    def timeout(self,):
+        return self.tree.timeout()
+    def updateBestOrder(self,latency,order):
+        self.tree.updateBestOrder(latency,order)
 
 
+    def updateBestCost(self,cost,order):
+        self.tree.updateBestCost(cost,order)
+    def getResult(self,):
+        return self.tree.getResult()
+
+
+    def getPlan(self,):
+        return pgrunner.getPlan(self.sql)
+
+    def getLatency(self,):
+        return pgrunner.getLatency(self)
+
+    def getCost(self,):
+        return pgrunner.getCost(self)

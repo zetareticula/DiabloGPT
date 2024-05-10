@@ -1,4 +1,4 @@
-package einsteindb
+package diablogpt
 
 import (
 	"os"

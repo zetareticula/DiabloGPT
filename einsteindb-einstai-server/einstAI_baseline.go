@@ -1,14 +1,4 @@
-package einsteindb
-
-import (
-	"bytes"
-	"database/sql/driver"
-	"errors"
-	"fmt"
-	"os/exec"
-	"strings"
-	_ "time"
-)
+package diablogpt
 
 const (
 	// ErrNeedRestart is the error that need restart

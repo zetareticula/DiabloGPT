@@ -44,8 +44,35 @@ class Config:
         self.enable_mergejoin = True
         self.enable_hashjoin = True
 
-self.use_gpu = True
-self.use_hint = True
-self.use_cost = True
+    def setConfig(self,config):
+        for key in config:
+            setattr(self,key,config[key])
+        return self
+    def getConfig(self):
+        return self
 
-        
+    def __str__(self):
+        return str(self.__dict__)
+    def __repr__(self):
+        return str(self.__dict__)
+
+    def __getitem__(self,key):
+        return getattr(self,key)
+
+    def __setitem__(self,key,value):
+        return setattr(self,key,value)
+
+    def __delitem__(self,key):
+        return delattr(self,key)
+
+
+
+
+        def __iter__(self):
+            return iter(self.__dict__)
+
+        def __len__(self):
+            return len(self.__dict__)
+
+        def __contains__(self, item):
+            return item in self.__dict__

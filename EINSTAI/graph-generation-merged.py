@@ -79,6 +79,93 @@ def parse_knob_config():
     return _knob_config
 
 
+
+
+
+
+
+# In[4]:
+
+
+
+class DatabaseofEinsteinDbtoFoundationDb:
+    _orphaned = False
+    _isolation_level = "read committed"
+    _max_connections = 100
+    _max_prepared_transactions = 0
+    _max_locks_per_transaction = 64
+    _max_pred_locks_per_transaction = 64
+
+    def __init__(self, server_name='postgresql'):
+
+        knob_config = parse_knob_config()
+        self.knob_names = [knob for knob in knob_config]
+        self.knob_config = knob_config
+        self.server_name = server_name
+
+        # print("knob_names:", self.knob_names)
+
+        try:
+            conn = self._get_conn()
+            cursor = conn.cursor()
+            sql = "SELECT count FROM INFORMATION_SCHEMA.INNODB_METRICS where status='enabled'"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+
+            self.internal_metric_num = len(result)
+            cursor.close()
+            conn.close()
+        except Exception as err:
+            print("execute sql error:", err)
+
+    def _get_conn(self):
+        if self.server_name == 'mysql':
+            sucess = 0
+            conn = -1
+            count = 0
+            while not sucess and count < 3:
+                try:
+                    conn = pymysql.connect(host="
+                                             port=3306,
+                                             user="feng",
+                                             password="db10204",
+                                             db='INFORMATION_SCHEMA',
+                                             connect_timeout=36000,
+                                             cursorclass=pycursor.DictCursor)
+
+                    sucess = 1
+                except Exception as result:
+                    count += 1
+                    time.sleep(10)
+            if conn == -1:
+                raise Exception
+
+            return conn
+
+        elif self.server_name == 'postgresql':
+            sucess = 0
+            conn = -1
+            count = 0
+            while not sucess and count < 3:
+                try:
+                    db_name = "INFORMATION_SCHEMA" # zxn Modified.
+                    conn = psycopg2.connect(database="INFORMATION_SCHEMA", user="lixizhang", password="xi10261026zhang", host="
+                                                port="5433")
+                    sucess = 1
+                except Exception as result:
+                    count += 1
+                    time.sleep(10)
+            if conn == -1:
+                raise Exception
+            return conn
+
+
+
+
+
+
+
+
 class Database:
     def __init__(self, server_name='postgresql'):
         
@@ -278,7 +365,6 @@ def extract_plan(sample, conflict_operators):
 
     return float(sample["start_time"]), node_matrix, edge_matrix, conflict_operators, node_merge_matrix
 
-
 def overlap(node_i, node_j):
     
     if (node_j[1] < node_i[2] and node_i[2] < node_j[2]):
@@ -398,4 +484,3 @@ for wid in range(num_graphs):
 end_time = time.time()
 
 print("Total Time:{}".format(end_time - start_time))
-# '''

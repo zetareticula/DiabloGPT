@@ -16,6 +16,8 @@ import numpy as np
 import self as self
 import torch
 from torch.nn import init
+
+from EINSTAI.OUCausetFlowProcess.PGUtils import pgrunner
 from tconfig import Config
 
 config = Config()
@@ -47,6 +49,11 @@ for name, param in policy_net.named_parameters():
 
 target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
+
+
+def DQN(policy_net, target_net, db_info, pgrunner, device):
+    return DQN(policy_net, target_net, db_info, pgrunner, device)
+
 
 
 
@@ -110,6 +117,8 @@ class Expr:
 
         else:
             raise "No Known type of Expr"
+
+
 
 
 class TargetTable:
@@ -202,6 +211,10 @@ class SelectStmtX:
         self.orderby = OrderBy(select_stmt["sortClause"]) if "sortClause" in select_stmt else None
 
     def __str__(self,):
+        """
+
+        :type self: object
+        """
         res = "SELECT "
         res += ", ".join([str(x) for x in self.target_list])
         res += "\nFROM "
