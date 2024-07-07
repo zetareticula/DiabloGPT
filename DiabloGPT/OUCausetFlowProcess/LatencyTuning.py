@@ -178,9 +178,8 @@ if __name__ == '__main__':
     Q4, Q1 = k_fold(JOBQueries, 10, 1)
     # print(Q4,Q1)
     train(Q4 + sytheticQueries, Q1)
-
-
-
+    # train(sytheticQueries,sytheticQueries)
+    
 
 
 

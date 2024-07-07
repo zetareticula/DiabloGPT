@@ -130,3 +130,28 @@ def extract_info_from_node(node, alias2table):
     else:
         raise Exception('Unsupported Node Type: ' + node['Node Type'])
         return None, None
+    
+
+def extract_features(input_path, out_path):
+    with open(out_path, 'w') as out:
+        with open(input_path, 'r') as f:
+            for index, plan in enumerate(f.readlines()):
+                print(index)
+                if plan != 'null\n':
+                    plan = json.loads(plan)[0]['Plan']
+                    if plan['Node Type'] == 'Aggregate':
+                        alias2table = {}
+                        get_alias2table(plan, alias2table)
+                        nodes = get_subplan(plan)
+                        nodes = sorted(nodes, key=lambda x: x[1], reverse=True)
+                        nodes = [node for node in nodes if node[2] > 0]
+                        nodes_with_sample = []
+                        for node in nodes:
+                            node = node[0]
+                            node, _ = extract_info_from_node(node, alias2table)
+                            nodes_with_sample.append(node)
+                        parsed_plan = {'seq': nodes_with_sample}
+                        out.write(json.dumps(parsed_plan))
+                        out.write('\n')
+
+            

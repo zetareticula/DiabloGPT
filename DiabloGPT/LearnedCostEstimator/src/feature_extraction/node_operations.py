@@ -69,3 +69,5 @@ class Result(object):
 
     def __str__(self):
         return 'Result'
+    
+    

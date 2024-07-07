@@ -253,3 +253,9 @@ if __name__=='__main__':
     print(len(Q4),len(Q1))
     # print(Q4,Q1)
     train(Q4+sytheticQueries,Q1)
+    # train(sytheticQueries,sytheticQueries)
+    # train(JOBQueries,JOBQueries)
+
+
+# In[ ]:
+

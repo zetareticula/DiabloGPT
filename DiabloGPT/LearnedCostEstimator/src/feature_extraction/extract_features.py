@@ -88,3 +88,32 @@ def feature_extractor(input_path, out_path):
                     seqs = PlanInSeq(seq, cost, cardinality)
                     out.write(class2json(seqs)+'\n')
 
+def feature_extractor_with_sample_bitmap(input_path, out_path, data, sample, sample_num):
+
+    with open(out_path, 'w') as out:
+        with open(input_path, 'r') as f:
+            for index, plan in enumerate(f.readlines()):
+                print (index)
+                if plan != 'null\n':
+                    plan = json.loads(plan)[0]['Plan']
+                    if plan['Node Type'] == 'Aggregate':
+                        plan = plan['Plans'][0]
+                    alias2table = {}
+                    get_alias2table(plan, alias2table)
+                    subplan, cost, cardinality = get_plan(plan)
+                    seq, _ = plan2seq(subplan, alias2table)
+                    seqs = PlanInSeq(seq, cost, cardinality)
+                    out.write(class2json(seqs)+'\n')
+
+
+def main():
+    data = load_data()
+    sample = load_sample()
+    sample_num = 100
+    input_path = 'data/tpch/plan_1.json'
+    output_path = 'data/tpch/plan_1_sample_bitmap.json'
+    add_sample_bitmap(input_path, output_path, data, sample, sample_num)
+    feature_extractor_with_sample_bitmap(output_path, 'data/tpch/plan_1_sample_bitmap_feature.json', data, sample, sample_num)
+
+if __main__ == '__main__':
+    main()
