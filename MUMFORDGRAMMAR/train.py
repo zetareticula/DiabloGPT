@@ -1,15 +1,14 @@
-#Copyright (c) 2022-2023 EinstAI Inc. All rights reserved.
+#Copyright (c) 2022-2025 EinstAI Inc. All rights reserved.
 #This source code is licensed under the Apache 2.0 license found in the
 #LICENSE file in the root directory of this source tree.
-
-
-
-
 import argparse
 import os
 import time
-
 import torch
+import torch.nn as nn 
+import torch.nn.functional as F
+import numpy as np
+
 
 from MUMFORDGRAMMAR.data import get_train_datasets, load_data, make_dataset
 from MUMFORDGRAMMAR.model import SetConv
@@ -18,7 +17,7 @@ from scipy import stats
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 
-# min_max_file = '/home/jintao/CardinalityEstimationBenchmark/learnedcardinalities-master/data/column_min_max_vals.csv'
+
 parser = argparse.ArgumentParser(description='MSCN.')
 parser.add_argument('--min-max-file', type=str, help='Min Max',
 
@@ -124,159 +123,167 @@ def print_pearson_correlation(x, y):
     fmetric.write("Pearson Correlation: {}".format(PCCs) + '\n\n')
     print("Pearson Correlation: {}".format(PCCs))
 
+    def train_and_predict(train_file, test_file, num_queries, num_epochs, batch_size, hid_units, cuda, need_train=True):
+        # Load training and validation data
+        print(min_max_file)
+        num_materialized_samples = 1000
+        dicts, column_min_max_vals, min_val, max_val, labels_train, labels_test, max_num_joins, max_num_predicates, train_data, test_data = get_train_datasets(
+            num_queries, num_materialized_samples, train_file, min_max_file)
+        table2vec, column2vec, op2vec, join2vec = dicts
+        print('need_train: ', need_train)
+        print('train_file: ', train_file)
+        print('test_file: ', test_file)
+        sample_feats = len(table2vec) + num_materialized_samples
+        predicate_feats = len(column2vec) + len(op2vec) + 1
+        join_feats = len(join2vec)
 
-def train_and_predict(train_file, test_file, num_queries, num_epochs, batch_size, hid_units, cuda, need_train=True):
-    # Load training and validation data
-    print(min_max_file)
-    num_materialized_samples = 1000
-    dicts, column_min_max_vals, min_val, max_val, labels_train, labels_test, max_num_joins, max_num_predicates, train_data, test_data = get_train_datasets(
-        num_queries, num_materialized_samples, train_file, min_max_file)
-    table2vec, column2vec, op2vec, join2vec = dicts
-    print('need_train: ', need_train)
-    print('train_file: ', train_file)
-    print('test_file: ', train_file)
-    sample_feats = len(table2vec) + num_materialized_samples
-    predicate_feats = len(column2vec) + len(op2vec) + 1
-    join_feats = len(join2vec)
+        # Print the number of validation samples
+        print("Number of validation samples: {}".format(len(labels_test)))
 
-    if need_train:
-        # Train model
+        if need_train:
+            # Train model
+            model = SetConv(sample_feats, predicate_feats, join_feats, hid_units)
+            optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-        model = SetConv(sample_feats, predicate_feats, join_feats, hid_units)
+            if cuda:
+                model.cuda()
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+            for p in model.parameters():
+                if p.data.dim() > 1:
+                    nn.init.xavier_uniform(p.data)
 
-        if cuda:
-            model.cuda()
+            for (name, param) in model.named_parameters():
+                if param.requires_grad:
+                    print(name, param.data)
 
-        train_data_loader = DataLoader(train_data, batch_size=batch_size)
-        test_data_loader = DataLoader(test_data, batch_size=batch_size)
-        train_start = time.time()
-        model.train()
-        for epoch in range(num_epochs):
-            loss_total = 0.
+            train_data_loader = DataLoader(train_data, batch_size=batch_size)
+            test_data_loader = DataLoader(test_data, batch_size=batch_size)
 
-            for batch_idx, data_batch in enumerate(train_data_loader):
+            train_start = time.time()
+            model.train()
+            for epoch in range(num_epochs):
+                loss_total = 0.
 
-                samples, predicates, joins, targets, sample_masks, predicate_masks, join_masks = data_batch
+                for batch_idx, data_batch in enumerate(train_data_loader):
 
-                if cuda:
-                    samples, predicates, joins, targets = samples.cuda(), predicates.cuda(), joins.cuda(), targets.cuda()
-                    sample_masks, predicate_masks, join_masks = sample_masks.cuda(), predicate_masks.cuda(), join_masks.cuda()
-                samples, predicates, joins, targets = Variable(samples), Variable(predicates), Variable(
-                    joins), Variable(
-                    targets)
-                sample_masks, predicate_masks, join_masks = Variable(sample_masks), Variable(predicate_masks), Variable(
-                    join_masks)
+                    samples, predicates, joins, targets, sample_masks, predicate_masks, join_masks = data_batch
 
-                optimizer.zero_grad()
-                outputs = model(samples, predicates, joins, sample_masks, predicate_masks, join_masks)
-                loss = qerror_loss(outputs, targets.float(), min_val, max_val)
-                loss_total += loss.item()
-                loss.backward()
-                optimizer.step()
+                    if cuda:
+                        samples, predicates, joins, targets = samples.cuda(), predicates.cuda(), joins.cuda(), targets.cuda()
+                        sample_masks, predicate_masks, join_masks = sample_masks.cuda(), predicate_masks.cuda(), join_masks.cuda()
+                    samples, predicates, joins, targets = Variable(samples), Variable(predicates), Variable(
+                        joins), Variable(
+                        targets)
+                    sample_masks, predicate_masks, join_masks = Variable(sample_masks), Variable(predicate_masks), Variable(
+                        join_masks)
 
-            print("Epoch {}, loss: {}".format(epoch, loss_total / len(train_data_loader)))
-        train_end = time.time()
+                    optimizer.zero_grad()
+                    outputs = model(samples, predicates, joins, sample_masks, predicate_masks, join_masks)
+                    loss = qerror_loss(outputs, targets.float(), min_val, max_val)
+                    loss_total += loss.item()
+                    loss.backward()
+                    optimizer.step()
 
-        print("Training Time: {}s".format(train_end - train_start))
-        fmetric.write("Training Time: {}s".format(train_end - train_start) + '\n')  # Write training time
-        path = train_file + '.mscn.model'
-        torch.save(model.state_dict(), path)
-        '''
-        # Get final training and validation set predictions
-        preds_train, t_total = predict(model, train_data_loader, cuda)
-        print("Prediction time per training sample: {}".format(t_total / len(labels_train) * 1000))
+                print("Epoch {}, loss: {}".format(epoch, loss_total / len(train_data_loader)))
+            train_end = time.time()
 
-        preds_test, t_total = predict(model, test_data_loader, cuda)
-        print("Prediction time per validation sample: {}".format(t_total / len(labels_test) * 1000))
+            print("Training Time: {}s".format(train_end - train_start))
+            fmetric.write("Training Time: {}s".format(train_end - train_start) + '\n')  # Write training time
+            path = train_file + '.mscn.model'
+            torch.save(model.state_dict(), path)
 
-        # Unnormalize
-        preds_train_unnorm = unnormalize_labels(preds_train, min_val, max_val)
-        labels_train_unnorm = unnormalize_labels(labels_train, min_val, max_val)
+            # Get final training and validation set predictions
+            preds_train, t_total = predict(model, train_data_loader, cuda)
+            print("Prediction time per training sample: {}".format(t_total / len(labels_train) * 1000))
 
-        preds_test_unnorm = unnormalize_labels(preds_test, min_val, max_val)
-        labels_test_unnorm = unnormalize_labels(labels_test, min_val, max_val)
+            preds_test, t_total = predict(model, test_data_loader, cuda)
+            print("Prediction time per validation sample: {}".format(t_total / len(labels_test) * 1000))
 
-        path = train_file + '.mscn.model'
-        torch.save(model.state_dict(), path)
+            # Unnormalize
+            preds_train_unnorm = unnormalize_labels(preds_train, min_val, max_val)
+            labels_train_unnorm = unnormalize_labels(labels_train, min_val, max_val)
 
-        # Print metrics
-        print("\nQ-Error training set:")
-        print_qerror(preds_train_unnorm, labels_train_unnorm)
-        print("\nMSE training set:")
-        print_mse(preds_train_unnorm, labels_train_unnorm)
-        print("\nMAPE training set:")
-        print_mape(preds_train_unnorm, labels_train_unnorm)
-        print("\nPearson Correlation training set:")
-        print_pearson_correlation(preds_train_unnorm, labels_train_unnorm)
+            preds_test_unnorm = unnormalize_labels(preds_test, min_val, max_val)
+            labels_test_unnorm = unnormalize_labels(labels_test, min_val, max_val)
 
-        print("\nQ-Error validation set:")
-        print_qerror(preds_test_unnorm, labels_test_unnorm)
-        print("\nMSE validation set:")
-        print_mse(preds_test_unnorm, labels_test_unnorm)
-        print("\nMAPE validation set:")
-        print_mape(preds_test_unnorm, labels_test_unnorm)
-        print("\nPearson Correlation validation set:")
-        print_pearson_correlation(preds_test_unnorm, labels_test_unnorm)
-        print("")
-        '''
-    else:
-        model = SetConv(sample_feats, predicate_feats, join_feats, hid_units)
-        path = train_file + '.mscn.model'
-        model.load_state_dict(torch.load(path))
-        model.eval()
+            path = train_file + '.mscn.model'
+            torch.save(model.state_dict(), path)
 
-        # Load test data
-        file_name = test_file
-        joins, predicates, tables, samples, label = load_data(file_name, num_materialized_samples)
+            # Print metrics
+            print("\nQ-Error training set:")
+            print_qerror(preds_train_unnorm, labels_train_unnorm)
+            print("\nMSE training set:")
+            print_mse(preds_train_unnorm, labels_train_unnorm)
+            print("\nMAPE training set:")
+            print_mape(preds_train_unnorm, labels_train_unnorm)
+            print("\nPearson Correlation training set:")
+            print_pearson_correlation(preds_train_unnorm, labels_train_unnorm)
 
-        # Get feature encoding and proper normalization
-        samples_test = encode_samples(tables, samples, table2vec)
-        predicates_test, joins_test = encode_data(predicates, joins, column_min_max_vals, column2vec, op2vec, join2vec)
-        labels_test, _, _ = normalize_labels(label, min_val, max_val)
+            print("\nQ-Error validation set:")
+            print_qerror(preds_test_unnorm, labels_test_unnorm)
+            print("\nMSE validation set:")
+            print_mse(preds_test_unnorm, labels_test_unnorm)
+            print("\nMAPE validation set:")
+            print_mape(preds_test_unnorm, labels_test_unnorm)
+            print("\nPearson Correlation validation set:")
+            print_pearson_correlation(preds_test_unnorm, labels_test_unnorm)
+            print("")
 
-        print("Number of test samples: {}".format(len(labels_test)))
+        else:
+            model = SetConv(sample_feats, predicate_feats, join_feats, hid_units)
+            path = train_file + '.mscn.model'
+            model.load_state_dict(torch.load(path))
+            model.eval()
 
-        max_num_predicates = max([len(p) for p in predicates_test])
-        max_num_joins = max([len(j) for j in joins_test])
+            # Load test data
+            file_name = test_file
+            joins, predicates, tables, samples, label = load_data(file_name, num_materialized_samples)
 
-        # Get test set predictions
-        test_data = make_dataset(samples_test, predicates_test, joins_test, labels_test, max_num_joins,
-                                 max_num_predicates)
-        test_data_loader = DataLoader(test_data, batch_size=batch_size)
+            # Get feature encoding and proper normalization
+            samples_test = encode_samples(tables, samples, table2vec)
+            predicates_test, joins_test = encode_data(predicates, joins, column_min_max_vals, column2vec, op2vec, join2vec)
+            labels_test, _, _ = normalize_labels(label, min_val, max_val)
 
-        preds_test, t_total = predict(model, test_data_loader, cuda)
-        fmetric.write("Prediction time per test sample: {}ms".format(t_total / len(labels_test) * 1000) + '\n')
-        # fmetric.close()
-        print("Prediction time per test sample: {}ms".format(t_total / len(labels_test) * 1000))
+            print("Number of test samples: {}".format(len(labels_test)))
 
-        # Unnormalize
-        preds_test_unnorm = unnormalize_labels(preds_test, min_val, max_val)
+            max_num_predicates = max([len(p) for p in predicates_test])
+            max_num_joins = max([len(j) for j in joins_test])
 
-        # Print metrics
-        print("\nQ-Error " + test_file + ":")
-        print_qerror(preds_test_unnorm, np.array(label, dtype=np.float64))
-        print("\nMSE validation set:")
-        print_mse(preds_test_unnorm, np.array(label, dtype=np.float64))
-        print("\nMAPE validation set:")
-        print_mape(preds_test_unnorm, np.array(label, dtype=np.float64))
-        print("\nPearson Correlation validation set:")
-        print_pearson_correlation(preds_test_unnorm, np.array(label, dtype=np.float64))
+            # Get test set predictions
+            test_data = make_dataset(samples_test, predicates_test, joins_test, labels_test, max_num_joins,
+                                     max_num_predicates)
+            test_data_loader = DataLoader(test_data, batch_size=batch_size)
 
-        # Write predictions
-        file_name = test_file + ".mscn.result.csv"
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
-        with open(file_name, "w") as f:
-            for i in range(len(preds_test_unnorm)):
-                f.write(str(preds_test_unnorm[i]) + "," + label[i] + "\n")
-        f.close()  # remark
+            preds_test, t_total = predict(model, test_data_loader, cuda)
+            fmetric.write("Prediction time per test sample: {}ms".format(t_total / len(labels_test) * 1000) + '\n')
+            print("Prediction time per test sample: {}ms".format(t_total / len(labels_test) * 1000))
+
+            # Unnormalize
+            preds_test_unnorm = unnormalize_labels(preds_test, min_val, max_val)
+
+            # Print metrics
+            print("\nQ-Error " + test_file + ":")
+            print_qerror(preds_test_unnorm, np.array(label, dtype=np.float64))
+            print("\nMSE validation set:")
+            print_mse(preds_test_unnorm, np.array(label, dtype=np.float64))
+            print("\nMAPE validation set:")
+            print_mape(preds_test_unnorm, np.array(label, dtype=np.float64))
+            print("\nPearson Correlation validation set:")
+            print_pearson_correlation(preds_test_unnorm, np.array(label, dtype=np.float64))
+
+            # Write predictions
+            file_name = test_file + ".mscn.result.csv"
+            os.makedirs(os.path.dirname(file_name), exist_ok=True)
+            with open(file_name, "w") as f:
+                for i in range(len(preds_test_unnorm)):
+                    f.write(str(preds_test_unnorm[i]) + "," + label[i] + "\n")
+            f.close()  # remark
 
 
-def main():
-    train_and_predict(args.train_query_file, args.test_query_file, args.queries, args.epochs, args.batch, args.hid,
-                      args.cuda, args.train)
+    def main():
+        train_and_predict(args.train_query_file, args.test_query_file, args.queries, args.epochs, args.batch, args.hid,
+                          args.cuda, args.train)
 
 
-if __name__ == "__main__":
-    main()
+    if __name__ == "__main__":
+        main()

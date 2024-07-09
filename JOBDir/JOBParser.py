@@ -255,17 +255,52 @@ class Table:
 class DB:
     def __init__(self, schema,TREE_NUM_IN_NET=40):
         from psqlparse import parse_dict
-        parse_tree = parse_dict(schema)
+import psqlparse
+parse_tree = parse_dict(schema)
 
-        self.tables = []
-        self.name2idx = {}
-        self.table_names = []
-        self.name2table = {}
-        self.size = 0
-        self.TREE_NUM_IN_NET = TREE_NUM_IN_NET
+self.tables = []
+self.name2idx = {}
+self.table_names = []
+self.name2table = {}
+self.size = 0
+self.TREE_NUM_IN_NET = TREE_NUM_IN_NET
 
 
 
+
+        def parse_dict(schema):
+            return psqlparse.parse(schema)
+
+        def parse_sql(sql):
+            return SQLParser(sql)
+
+        def main():
+            schema = """
+            CREATE TABLE users (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100),
+                age INTEGER
+            );
+
+            CREATE TABLE orders (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER,
+                product VARCHAR(100),
+                quantity INTEGER
+            );
+            """
+
+            db = DB(schema)
+            print(len(db))
+            print(db.oneHotAll())
+            print(db.network_size())
+
+            sql = "SELECT min(name) AS alternative_name FROM users WHERE age > 18 GROUP BY name"
+            parsed_sql = parse_sql(sql)
+            print(parsed_sql)
+
+        if __name__ == "__main__":
+            main()
 
 
 

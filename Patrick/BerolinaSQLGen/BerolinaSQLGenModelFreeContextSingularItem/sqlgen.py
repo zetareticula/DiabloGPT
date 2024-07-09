@@ -161,8 +161,8 @@ class DDPG(object):
         return self.einstAIActor(state).cpu().data.numpy().flatten()
     
 
-    #############################
-    
+    #######################
+    ## Update Networks  ##
 
     def learn(self, state, action, reward, next_state, done):
         state = torch.FloatTensor(state.reshape(1, -1)).to(self.device)
@@ -188,9 +188,26 @@ class DDPG(object):
         torch.nn.utils.clip_grad_norm_(self.einstAIActor.parameters(), 0.5) ## gradient clipping
 
 
+## Define the einstAIActor and Critic
+class einstAIActor(nn.Module):
+    def __init__(self, state_dim, action_dim):
+        super(einstAIActor, self).__init__()
+        self.layer_1 = nn.Linear(state_dim, 400)
+        self.layer_2 = nn.Linear(400, 300)
+        self.layer_3 = nn.Linear(300, action_dim)
+        self.relu = nn.ReLU()
+        self.tanh = nn.Tanh()
+        
+    def forward(self, state):
+        x = self.relu(self.layer_1(state))
+        x = self.relu(self.layer_2(x))
+        x = self.tanh(self.layer_3(x))
+        return x
 class CriticLow(nn.Module):
 
+##We need to define the Critic network to evaluate the Q-values of the state-action pairs.
     def __init__(self, n_states, n_actions):
+##The constructor of the Critic class takes the number of states and actions as input arguments.
         super(CriticLow, self).__init__()
         self.state_input = nn.Linear(n_states, 32)
         self.action_input = nn.Linear(n_actions, 32)
@@ -253,7 +270,7 @@ class einstAIActor(nn.Module):
             nn.BatchNorm1d(64),
         )
         if noisy:
-            self.out = NoisyLinear(64, n_actions)
+            self.out = NoisyLinear(64, n_actions) # type: ignore ## NoisyLinear layer
         else:
             self.out = nn.Linear(64, n_actions)
         self._init_weights()
@@ -341,8 +358,6 @@ class DDPG(object):
         """
         self.n_states = n_states
         self.n_actions = n_actions
-
-        # Params
         self.alr = opt['alr']
         self.clr = opt['clr']
         self.model_name = opt['model']
@@ -351,17 +366,25 @@ class DDPG(object):
         self.tau = opt['tau']
         self.ouprocess = ouprocess
 
+##The constructor of the DDPG class takes the number of states, number of actions, and a dictionary of hyperparameters as input arguments.
+        for key in opt:
+            logger.info('{}: {}'.format(key, opt[key]))
+
         if mean_var_path is None:
             mean = np.zeros(n_states)
             var = np.zeros(n_states)
         elif not os.path.exists(mean_var_path):
             mean = np.zeros(n_states)
             var = np.zeros(n_states)
+
+            with open(mean_var_path, 'wb') as f:
+                pickle.dump([mean, var], f)
         else:
             with open(mean_var_path, 'rb') as f:
                 mean, var = pickle.load(f)
 
-        self.normalizer = Normalizer(mean, var)
+
+        self.normalizer = Normalizer(mean, var) # type: ignore
 
         if supervised:
             self._build_einstAIActor()

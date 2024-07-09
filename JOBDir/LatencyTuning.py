@@ -14,6 +14,15 @@ import torch
 from torch.nn import init
 from ImportantConfig import Config
 
+## This script is used to tune the latency of the queries ##
+############################################################################################################
+## The script uses the DQN model to tune the latency of the queries. The DQN model is trained on the queries
+## and the latency is tuned. The script uses the PGRunner class to get the latency of the queries. The script
+## uses the DQN class to train the model. The script uses the ENV class to get the environment of the queries.
+## The script uses the SPINN class to get the tree lstm model. The script uses the DB class to get the database
+## information. The script uses the Config class to get the configuration of the script.
+############################################################################################################
+
 config = Config()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -22,8 +31,21 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 with open(config.schemaFile, "r") as f:
     createSchema = "".join(f.readlines())
 
-db_info = DB(createSchema)
+    for i in range(1, 5):
+        with open(config.schemaFile + str(i), "r") as f:
+            createSchema += "".join(f.readlines())
 
+            if i == 4:
+                break
+
+            for j in range(1, 5):
+                with open(config.schemaFile + str(i) + str(j), "r") as f:
+                    createSchema += "".join(f.readlines())
+
+##
+## The script uses the DB class to get the database information. The script uses the SPINN class to get the tree lstm model.
+
+db_info = DB(createSchema)
 featureSize = 128
 
 policy_net = SPINN(n_classes = 1, size = featureSize, n_words = 50,mask_size= len(db_info)*len(db_info),device=device).to(device)
@@ -69,8 +91,10 @@ def QueryLoader(QueryDir):
     return sql_list
 
 def resample_sql(sql_list):
+
+    ## This function is used to resample the queries ##
     rewards = []
-    reward_sum = 0
+    reward_sum = 0 ## This variable is used to store the reward sum of the queries ##
     rewardsP = []
     mes = 0
     for sql in sql_list:

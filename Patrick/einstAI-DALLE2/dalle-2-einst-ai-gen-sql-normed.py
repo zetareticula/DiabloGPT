@@ -488,35 +488,23 @@ elif opt.phase == 'test_read_write':
     
 
 
-#
-#
-#     assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
-#     model.load_model(opt.params)
-# env = ReadEnv(tconfig)
-# state = env.reset()
+# Save the model every 10 epochs
+if epoch % 10 == 0:
+    model.save_model('sl_model_params/{}_{}.pkl'.format(expr_name, epoch))
 
-# for i in range(tconfig['num_steps']):
-
-    # We save the model every 10 epochs
-    # we do this so Dall-e can be used to generate images
-    # while the model is still training
-
-
-
-model.save_model('sl_model_params/{}_{}.pkl'.format(expr_name, epoch))
-
-action = get_action(state)
-next_state, reward, done, info = env.step(action)
-state = next_state
-if done:
-    break
+# Perform actions and update state until done
+for i in range(tconfig['num_steps']):
+    action = get_action(state)
+    next_state, reward, done, info = env.step(action)
+    state = next_state
+    if done:
+        break
 
 env.close()
 
+print("[Epoch {}] Test Loss: {}".format(epoch, test_loss))
 
 print('Testing Done')
-
-
 if __name__ == '__main__':
     if opt.phase == 'train':
         if opt.params == '':
@@ -575,8 +563,6 @@ if __name__ == '__main__':
     model.load_einstAIActor(opt.params)
     train()
     print('Training Done')
-
-
 
     assert len(opt.params) != 0, "PARAMS should be specified when testing DDPG einstAIActor"
     model.load_einstAIActor(opt.params)
