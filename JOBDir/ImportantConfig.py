@@ -9,3 +9,9 @@ class Config:
         self.ip = "127.0.0.1"
         self.port = 5432
 
+        self.db_user = self.userName
+        self.db_password = self.password
+        self.db_host = self.ip
+        self.db_port = self.port
+        self.db = self.dbName
+

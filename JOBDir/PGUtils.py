@@ -1,11 +1,22 @@
 import psycopg2
 import json
 from math import log
+import os
+import json
+
+
+## PGUtils uses postgresql benchmarking to get the latency of a query
+## It uses the psycopg2 library to connect to the database and run queries
+## It also uses the json library to read and write the latency records to a file
+
 class PGConfig:
     def __init__(self):
         self.keepExecutedPlan =True
         self.maxTimes = 5
         self.maxTime = 300000
+        self.maxCost = 1000000
+        self.maxRows = 1000000
+        self.maxJoinRows = 1000000
 
 LatencyDict = {}
 selectivityDict = {}
@@ -52,6 +63,13 @@ class PGRunner:
         else:
             f = open(fileName,"w")
         return f
+    def close(self):
+        self.con.close()
+        if self.isLatencyRecord:
+            global LatencyRecordFileHandle
+            LatencyRecordFileHandle.close()
+
+    
     def getLatency(self, sql,sqlwithplan):
         """
         :param sql:a sqlSample object
@@ -65,13 +83,17 @@ class PGRunner:
             if sqlwithplan in LatencyDict:
                 return LatencyDict[sqlwithplan]
 
+##execute the current query set join_collapse_limit = 1;
         self.cur.execute("set join_collapse_limit = 1;")
+        ##execute the current query set with sql timeout
         self.cur.execute("SET statement_timeout = "+str(int(sql.timeout()))+ ";")
         self.cur.execute("set max_parallel_workers=1;")
         self.cur.execute("set max_parallel_workers_per_gather = 1;")
         self.cur.execute("set geqo_threshold = 20;")
         self.cur.execute("EXPLAIN "+sqlwithplan)
         thisQueryCost = self.getCost(sql,sqlwithplan)
+
+        # print("thisQueryCost",thisQueryCost)
         if thisQueryCost / sql.getDPCost()<100:
             try:
                 self.cur.execute("EXPLAIN ANALYZE "+sqlwithplan)
@@ -91,6 +113,10 @@ class PGRunner:
             LatencyRecordFileHandle.write(json.dumps([sqlwithplan,afterCost])+"\n")
             LatencyRecordFileHandle.flush()
         return afterCost
+    
+    ##
+    # getCost function is used to get the cost of the query without executing it
+    #
     def getCost(self,sql,sqlwithplan):
         """
         :param sql: a sqlSample object
@@ -109,17 +135,35 @@ class PGRunner:
                               0])
         self.con.commit()
         return afterCost
-
+    #getDDPlanTime is the SQL plan advisory.
     def getDPPlanTime(self,sql,sqlwithplan):
         """
         :param sql: a sqlSample object
         :return: the planTime of sql
         """
-        import time
+        self.cur.execute("set join_collapse_limit = 1;")
+        self.cur.execute("set max_parallel_workers=1;")
         startTime = time.time()
         cost = self.getCost(sql,sqlwithplan)
         plTime = time.time()-startTime
+
         return plTime
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def getSelectivity(self,table,whereCondition):
         global selectivityDict
         if whereCondition in selectivityDict:

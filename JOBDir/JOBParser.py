@@ -1,10 +1,66 @@
 import numpy as np
-class Expr:
-    def __init__(self, expr,list_kind = 0):
-        self.expr = expr
+import json
+import os
+import psycopg2
+
+class PGConfig:
+    def __init__(self,):
+        self.config = {}
+        self.config["work_mem"] = 4*1024*1024
+        self.config["effective_cache_size"] = 16*1024*1024
+        self.config["random_page_cost"] = 4
+        self.config["cpu_tuple_cost"] = 0.01
+        self.config["cpu_index_tuple_cost"] = 0.005
+        self.config["cpu_operator_cost"] = 0.0025
+        self.config["seq_page_cost"] = 1
+        self.config["max_parallel_workers_per_gather"] = 0
+        self.config["max_parallel_workers"] = 0
+        self.config["parallel_setup_cost"] = 1000
+        self.config["parallel_tuple_cost"] = 0.1
+        self.config["jit"] = "off"
+        self.config["jit_above_cost"] = 100000
+        self.config["jit_optimize_above_cost"] = 100000
+        self.config["jit_inline_above_cost"] = 100000
+        self.config["jit_dump_bitcode"] = "off"
+        self.config["jit_expressions"] = "on"
+        self.config["jit_profiling_support"] = "off"
+        self.config["jit_profiling_save"] = "off"
+        self.config["jit_above_cost"] = 100000
+        self.config["jit_optimize_above_cost"] = 100000
+        self.config["jit_inline_above_cost"] = 100000
+        self.config["jit_dump_bitcode"] = "off"
+        self.config["jit_expressions"] = "on"
+        self.config["jit_profiling_support"] = "off"
+        self.config["jit_profiling_save"] = "off"
+        self.config["jit_provider"] = "llvmjit"
+        self.config["jit_flags"] = "all"
+        self.config["jit_debugging_support"] = "off"
+        self.config["jit_dump_bitcode"] = "off"
+        self.config["jit_above_cost"] = 100000
+        self.config["jit_optimize_above_cost"] = 100000
+        self.config["jit_inline_above_cost"] = 100000
+        self.config["jit_dump_bitcode"] = "off"
+        self.config["jit_expressions"] = "on"
+        self.config["jit_profiling_support"] = "off"
+        
+    def __str__(self,):
+        return json.dumps(self.config, sort_keys=True, indent=4)
+    
+    def __getitem__(self, key):
+        return self.config[key]
+    
+    def __setitem__(self, key, value):
+        self.config[key] = value
+
+class PGUtils:
+    class Expr:
+        def __init__(self, expr,list_kind = 0):
+            self.expr = expr
         self.list_kind = list_kind
         self.isInt = False
         self.val = 0
+
+        #         print(self.expr)
     def isCol(self,):
         return isinstance(self.expr, dict) and "ColumnRef" in self.expr
 
@@ -24,12 +80,14 @@ class Expr:
                 return value_expr["TypeCast"]['typeName']['TypeName']['names'][0]['String']['str']+" '"+value_expr["TypeCast"]['arg']['A_Const']['val']['String']['str']+"'"
             else:
                 if value_expr["TypeCast"]['typeName']['TypeName']['typmods'][0]['A_Const']['val']['Integer']['ival']==2:
+                    #                     print(value_expr["TypeCast"]['typeName']['TypeName']['names'][1]['String']['str'])
                     return value_expr["TypeCast"]['typeName']['TypeName']['names'][1]['String']['str']+" '"+value_expr["TypeCast"]['arg']['A_Const']['val']['String']['str']+ "' month"
                 else:
                     return value_expr["TypeCast"]['typeName']['TypeName']['names'][1]['String']['str']+" '"+value_expr["TypeCast"]['arg']['A_Const']['val']['String']['str']+ "' year"
         else:
             print(value_expr.keys())
             raise "unknown Value in Expr"
+        
 
     def getAliasName(self,):
         return self.expr["ColumnRef"]["fields"][0]["String"]["str"]
@@ -205,6 +263,13 @@ class DB:
         self.name2table = {}
         self.size = 0
         self.TREE_NUM_IN_NET = TREE_NUM_IN_NET
+
+
+
+
+
+
+
         for idx, table_tree in enumerate(parse_tree):
             self.tables.append(Table(table_tree["CreateStmt"]))
             self.table_names.append(self.tables[-1].name)
@@ -229,3 +294,36 @@ class DB:
     def network_size(self,):
         return self.TREE_NUM_IN_NET*self.size
 
+
+class SQLParser:
+    def __init__(self, sql):
+        self.sql = sql
+        self.sql_tree = parse_dict(sql)
+        self.target = TargetTable(self.sql_tree[0]["SelectStmt"]["targetList"][0])
+        self.from_table = FromTable(self.sql_tree[0]["SelectStmt"]["fromClause"][0])
+        self.where = Comparison(self.sql_tree[0]["SelectStmt"]["whereClause"])
+        self.groupby = self.sql_tree[0]["SelectStmt"]["groupClause"]
+        self.groupby = []
+    
+    def __str__(self,):
+        return "SELECT "+str(self.target)+" FROM "+str(self.from_table)+" WHERE "+str(self.where)
+    
+    def getSQL(self,):
+        for table in self.tables:
+         self.columns_total += len(table.idx2column)
+
+         
+        self.size = len(self.table_names)
+        if self.size == 0:
+            self.size = len(self.table_names)
+            for i in range(self.size):
+                self.table_names.append("table"+str(i))
+                for j in range(10):
+                    self.tables.append(Table())
+                    self.name2idx[self.table_names[-1]] = len(self.tables)-1
+                    self.name2table[self.table_names[-1]] = self.tables[-1]
+                for table in self.tables:
+                    self.columns_total += len(table.idx2column)
+                    if self.columns_total > 0:
+                        break
+        return self.size

@@ -485,9 +485,8 @@ elif opt.phase == 'test_read_write':
     # we do this so Dall-e can be used to generate images
     # while the model is still training
 
-    if epoch % 10 == 0:
     
-    
+
 
 #
 #
@@ -502,15 +501,18 @@ elif opt.phase == 'test_read_write':
     # we do this so Dall-e can be used to generate images
     # while the model is still training
 
-    if epoch % 10 == 0:
 
-        model.save_model('sl_model_params/{}_{}.pkl'.format(expr_name, epoch))
 
-    action = get_action(state)
-    next_state, reward, done, info = env.step(action)
-    state = next_state
-    if done:
-        break
+model.save_model('sl_model_params/{}_{}.pkl'.format(expr_name, epoch))
+
+action = get_action(state)
+next_state, reward, done, info = env.step(action)
+state = next_state
+if done:
+    break
+
+env.close()
+
 
 print('Testing Done')
 
@@ -737,7 +739,17 @@ if __name__ == '__main__':
             agent = DDPGAgent(env, model, tconfig)
             agent.run()
 
+
+    if opt.phase == 'train':
+        if opt.params == '':
+            model = models.NARU(tconfig)
+        else:
+            model = models.NARU(tconfig, opt.params)
+        model.train()
+
     else:
+        raise Exception('Wrong phase')
+    
 
     current_ricci = environment.get_init_Ricci()
 
@@ -803,20 +815,14 @@ if __name__ == '__main__':
     delta_latency = (-metric2['latency'] + metric1['latency']) / metric1['latency']
 
     print("[Evaluation Result] Latency Decrease: {} TPS Increase: {}".format(delta_latency, delta_tps))
+    print("Evaluation Finished")
+    print("Finished")
 
 
-if __name__ == '__main__':
+    current_ricci = environment.get_init_Ricci()
 
-    if opt.phase == 'train':
-        if opt.params == '':
-            model = models.NARU(tconfig)
-        else:
-            model = models.NARU(tconfig, opt.params)
-        model.train()
+    expr_name = 'sl_test_ddpg_{}'.format(str(utils.get_timestamp()))
 
-    elif opt.phase == 'test':
-        model = models.NARU(tconfig, opt.params)
-        model.test()
 
-    else:
-        raise Exception('Wrong phase')
+    logger = utils.Logger( name='train_supervised', log_file='log/{}.log'.format(expr_name))     
+    assert len(opt.params) != 0, "Please add params' path"

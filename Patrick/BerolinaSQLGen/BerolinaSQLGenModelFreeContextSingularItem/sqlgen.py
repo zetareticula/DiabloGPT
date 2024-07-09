@@ -21,6 +21,117 @@ from torch.distributions import Normal
 
 from einstAIActor import einstAIActor
 from einstAICritic import einstAICritic
+import os
+import sys
+import math
+import torch
+import pickle
+import numpy as np
+from torch.autograd import Variable
+from torch.distributions import Normal
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optimizer
+
+class CriticLow(nn.Module):
+    def __init__(self, n_states, n_actions):
+        super(CriticLow, self).__init__()
+        self.state_input = nn.Linear(n_states, 32)
+        self.action_input = nn.Linear(n_actions, 32)
+        self.act = nn.LeakyReLU(negative_slope=0.2)
+        self.state_bn = nn.BatchNorm1d(n_states)
+        self.layers = nn.Sequential(
+            nn.Linear(64, 1),
+            nn.LeakyReLU(negative_slope=0.2),
+        )
+        self._init_weights()
+
+    def _init_weights(self):
+        self.state_input.weight.data.normal_(0.0, 1e-3)
+        self.state_input.bias.data.uniform_(-0.1, 0.1)
+        self.action_input.weight.data.normal_(0.0, 1e-3)
+        self.action_input.bias.data.uniform_(-0.1, 0.1)
+        for m in self.layers:
+            if isinstance(m, nn.Linear):
+                m.weight.data.normal_(0.0, 1e-3)
+                m.bias.data.uniform_(-0.1, 0.1)
+
+    def forward(self, x, causet_action):
+        x = self.state_bn(x)
+        x = self.act(self.state_input(x))
+        causet_action = self.act(self.action_input(causet_action))
+        _input = torch.cat([x, causet_action], dim=1)
+        value = self.layers(_input)
+        return value
+
+class einstAIActor(nn.Module):
+    def __init__(self, n_states, n_actions, noisy=False):
+        super(einstAIActor, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(n_states, 128),
+            nn.LeakyReLU(negative_slope=0.2),
+            nn.BatchNorm1d(128),
+            nn.Linear(128, 128),
+            nn.Tanh(),
+            nn.Dropout(0.3),
+            nn.Linear(128, 64),
+            nn.Tanh(),
+            nn.BatchNorm1d(64),
+        )
+        if noisy:
+            self.out = NoisyLinear(64, n_actions)
+        else:
+            self.out = nn.Linear(64, n_actions)
+        self._init_weights()
+        self.act = nn.Sigmoid()
+
+    def _init_weights(self):
+        for m in self.layers:
+            if isinstance(m, nn.Linear):
+                m.weight.data.normal_(0.0, 1e-3)
+                m.bias.data.uniform_(-0.1, 0.1)
+        if isinstance(self.out, nn.Linear):
+            self.out.weight.data.normal_(0.0, 1e-3)
+            self.out.bias.data.uniform_(-0.1, 0.1)
+
+    def forward(self, x):
+        out = self.act(self.out(self.layers(x)))
+        return out
+
+class Critic(nn.Module):
+    def __init__(self, n_states, n_actions):
+        super(Critic, self).__init__()
+        self.state_input = nn.Linear(n_states, 128)
+        self.action_input = nn.Linear(n_actions, 128)
+        self.act = nn.Tanh()
+        self.layers = nn.Sequential(
+            nn.Linear(256, 256),
+            nn.LeakyReLU(negative_slope=0.2),
+            nn.BatchNorm1d(256),
+            nn.Linear(256, 64),
+            nn.Tanh(),
+            nn.Dropout(0.3),
+            nn.BatchNorm1d(64),
+            nn.Linear(64, 1),
+        )
+        self._init_weights()
+
+    def _init_weights(self):
+        self.state_input.weight.data.normal_(0.0, 1e-2)
+        self.state_input.bias.data.uniform_(-0.1, 0.1)
+        self.action_input.weight.data.normal_(0.0, 1e-2)
+        self.action_input.bias.data.uniform_(-0.1, 0.1)
+        for m in self.layers:
+            if isinstance(m, nn.Linear):
+                m.weight.data.normal_(0.0, 1e-3)
+                m.bias.data.uniform_(-0.1, 0.1)
+
+    def forward(self, x, causet_action):
+        x = self.act(self.state_input(x))
+        causet_action = self.act(self.action_input(causet_action))
+        _input = torch.cat([x, causet_action], dim=1)
+        value = self.layers(_input)
+        return value
 
 class DDPG(object):
     def __init__(self, state_dim, action_dim, action_bound, learning_rate, tau, gamma, batch_size, device):
@@ -33,11 +144,11 @@ class DDPG(object):
         self.batch_size = batch_size
         self.device = device
 
-        self.einstAIActor = einstAIActor(self.state_dim, self.action_dim, self.action_bound, self.device).to(self.device)
-        self.einstAICritic = einstAICritic(self.state_dim, self.action_dim, self.device).to(self.device)
+        self.einstAIActor = einstAIActor(self.state_dim, self.action_dim).to(self.device)
+        self.einstAICritic = Critic(self.state_dim, self.action_dim).to(self.device)
 
-        self.einstAIActor_target = einstAIActor(self.state_dim, self.action_dim, self.action_bound, self.device).to(self.device)
-        self.einstAICritic_target = einstAICritic(self.state_dim, self.action_dim, self.device).to(self.device)
+        self.einstAIActor_target = einstAIActor(self.state_dim, self.action_dim).to(self.device)
+        self.einstAICritic_target = Critic(self.state_dim, self.action_dim).to(self.device)
 
         self.einstAIActor_target.load_state_dict(self.einstAIActor.state_dict())
         self.einstAICritic_target.load_state_dict(self.einstAICritic.state_dict())
@@ -48,6 +159,10 @@ class DDPG(object):
     def choose_action(self, state):
         state = torch.FloatTensor(state.reshape(1, -1)).to(self.device)
         return self.einstAIActor(state).cpu().data.numpy().flatten()
+    
+
+    #############################
+    
 
     def learn(self, state, action, reward, next_state, done):
         state = torch.FloatTensor(state.reshape(1, -1)).to(self.device)
@@ -62,98 +177,15 @@ class DDPG(object):
 
         current_Q = self.einstAICritic(state, action)
 
-         # the loss of the critic
         einstAICritic_loss = F.mse_loss(current_Q, target_Q)
         self.einstAICritic_optimizer.zero_grad()
         einstAICritic_loss.backward()
         self.einstAICritic_optimizer.step()
-        
-        
-sys.path.append('../')
 
-from OUProcess import OUProcess
-from replay_memory import ReplayMemory
-from prioritized_replay_memory import PrioritizedReplayMemory
-
-class NoisyLinear(nn.Linear):
-    def __init__(self, in_features, out_features, sigma_init=0.05, bias=True):
-        super(NoisyLinear, self).__init__(in_features, out_features, bias=True)  # TODO: Adapt for no bias
-        # µ^w and µ^b reuse self.weight and self.bias
-        self.sigma_init = sigma_init
-        self.sigma_weight = Parameter(torch.Tensor(out_features, in_features))  # σ^w
-        self.sigma_bias = Parameter(torch.Tensor(out_features))  # σ^b
-        self.register_buffer('epsilon_weight', torch.zeros(out_features, in_features))
-        self.register_buffer('epsilon_bias', torch.zeros(out_features))
-        self.reset_parameters()
-
-    def reset_parameters(self):
-        if hasattr(self, 'sigma_weight'):  # Only init after all params added (otherwise super().__init__() fails)
-            init.uniform(self.weight, -math.sqrt(3 / self.in_features), math.sqrt(3 / self.in_features))
-            init.uniform(self.bias, -math.sqrt(3 / self.in_features), math.sqrt(3 / self.in_features))
-            init.constant(self.sigma_weight, self.sigma_init)
-            init.constant(self.sigma_bias, self.sigma_init)
-
-    def forward(self, input):
-        return F.linear(input, self.weight + self.sigma_weight * Variable(self.epsilon_weight), self.bias + self.sigma_bias * Variable(self.epsilon_bias))
-
-    def sample_noise(self):
-        self.epsilon_weight = torch.randn(self.out_features, self.in_features)
-        self.epsilon_bias = torch.randn(self.out_features)
-
-    def remove_noise(self):
-        self.epsilon_weight = torch.zeros(self.out_features, self.in_features)
-        self.epsilon_bias = torch.zeros(self.out_features)
-
-
-class Normalizer(object):
-
-    def __init__(self, mean, variance):
-        if isinstance(mean, list):
-            mean = np.array(mean)
-        if isinstance(variance, list):
-            variance = np.array(variance)
-        self.mean = mean
-        self.std = np.sqrt(variance+0.00001)
-
-    def normalize(self, x):
-        if isinstance(x, list):
-            x = np.array(x)
-        x = x - self.mean
-        x = x / self.std
-
-        return Variable(torch.FloatTensor(x))
-
-    def __call__(self, x, *args, **kwargs):
-        return self.normalize(x)
-
-
-class einstAIActorLow(nn.Module):
-
-    def __init__(self, n_states, n_actions, ):
-        super(einstAIActorLow, self).__init__()
-        self.layers = nn.Sequential(
-            nn.BatchNorm1d(n_states),
-            nn.Linear(n_states, 32),
-            nn.LeakyReLU(negative_slope=0.2),
-            nn.BatchNorm1d(32),
-            nn.Linear(32, n_actions),
-            nn.LeakyReLU(negative_slope=0.2)
-        )
-        self._init_weights()
-        self.out_func = nn.Tanh()
-
-    def _init_weights(self):
-
-        for m in self.layers:
-            if type(m) == nn.Linear:
-                m.weight.data.normal_(0.0, 1e-3)
-                m.bias.data.uniform_(-0.1, 0.1)
-
-    def forward(self, x):
-
-        out = self.layers(x)
-
-        return self.out_func(out)
+        einstAIActor_loss = -self.einstAICritic(state, self.einstAIActor(state)).mean()
+        self.einstAIActor_optimizer.zero_grad() ## zero gradient
+        einstAIActor_loss.backward() ## gradient ascent
+        torch.nn.utils.clip_grad_norm_(self.einstAIActor.parameters(), 0.5) ## gradient clipping
 
 
 class CriticLow(nn.Module):

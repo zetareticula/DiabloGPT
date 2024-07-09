@@ -1,10 +1,19 @@
 import os
 import pickle
 import re
-
+import sys
 import pandas as pd
 
+data_dir = '/home/jintao/CardinalityEstimationBenchmark/Distinct-Value-High/'
+sql_path = '/home/jintao/CardinalityEstimationBenchmark/train-test-data/cols-sql/4/train-4-num.sql'
+
+table = 'column_min_max_vals'
+alias = 'column_min_max_vals'
 min_max_file = 'data/column_min_max_vals.csv'
+
+
+
+
 
 
 def preprocess_sql(sql_path):

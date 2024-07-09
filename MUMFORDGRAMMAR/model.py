@@ -1,6 +1,18 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.autograd import Variable
+from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
+from torch.nn.utils.rnn import PackedSequence
+import numpy as np
+import random
+import math
+import time
+import os
+from collections import defaultdict
+
+
+
 
 
 # Define model architecture
@@ -47,3 +59,5 @@ class SetConv(nn.Module):
         hid = F.relu(self.out_mlp1(hid))
         out = torch.sigmoid(self.out_mlp2(hid))
         return out
+    
+    

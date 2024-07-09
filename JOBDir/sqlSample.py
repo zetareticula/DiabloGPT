@@ -45,7 +45,7 @@ class JoinTree:
         for aliasname in self.aliasnames_root_set:
             self.table_fea_set[aliasname] = [0.0]*max_column_in_table*2
 
-        ##提取所有的Join和filter
+     
         self.join_candidate = set()
         self.join_matrix=[]
         for aliasname in self.aliasnames_root_set:
@@ -112,13 +112,21 @@ class JoinTree:
             self.predice_feature+= predice_list_dict[fullname]
         self.predice_feature = np.asarray(self.predice_feature).reshape(1,-1)
         self.join_matrix = torch.tensor(np.asarray(self.join_matrix).reshape(1,-1),device = self.device,dtype = torch.float32)
+    def getJoinMatrix(self,):
+        return self.join_matrix
+    
+
+
+
+
+
 
     def resetJoin(self):
         self.aliasnames_fa = {}
         self.left_son = {}
         self.right_son = {}
         self.aliasnames_root_set = set([x.getAliasName() for x in self.from_table_list])
-
+        self.aliasnames_set = {}
         self.left_aliasname  = {}
         self.right_aliasname =  {}
         self.aliasnames_join_set = {}
@@ -139,6 +147,8 @@ class JoinTree:
             self.aliasnames_fa[node_name] = fa_name
             node_name = temp_name
         return fa_name
+    
+
 
     def joinTables(self,aliasname_left,aliasname_right,fake=False):
         aliasname_left_fa = self.findFather(aliasname_left)
@@ -285,6 +295,37 @@ class sqlInfo:
         if self.bestOrder == None or self.bestLatency > latency:
             self.bestLatency = latency
             self.bestOrder = order
+    def getBestLatency(self,):
+        return self.bestLatency
+
+class readWriteLatency:
+    def __init__(self,pgRunner):
+        self.pgRunner = pgRunner
+        self.sqlInfoList = []
+    def read(self,filename):
+        with open (filename) as f:
+            for line in f:
+                sql = line.strip()
+                self.sqlInfoList.append(sqlInfo(self.pgRunner,sql,filename))
+    def write(self,filename):
+        with open (filename,'w') as f:
+            for sqlInfo in self.sqlInfoList:
+                f.write(sqlInfo.sql+"\n")
+    def getBestOrder(self,):
+        for sqlInfo in self.sqlInfoList:
+            sqlInfo.getBestOrder()
+    
+## We establish a class JOBParser to parse the SQL query
+class JOBParser:
+
+    def __init__(self,db_info,pgRunner,device):
+        self.db_info = db_info
+        self.pgRunner = pgRunner
+        self.device = device
+    def parse(self,sql):
+        return JoinTree(sql,self.db_info,self.pgRunner,self.device)
+     
+
 
 
 

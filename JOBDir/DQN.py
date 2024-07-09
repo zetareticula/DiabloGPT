@@ -217,3 +217,60 @@ class DQN:
             self.optimizer.step()
             return loss.item()
         return None
+    
+    def train(self,sql_list,epoch = 100):
+        for i in range(epoch):
+            for sql in sql_list:
+                pg_cost = sql.getDPlantecy()
+                env = ENV(sql,self.db_info,self.pgrunner,self.device)
+                for t in count():
+                    action_list, chosen_action,all_action = self.select_action(env)
+                    left = chosen_action[0]
+                    right = chosen_action[1]
+                    env.takeAction(left,right)
+                    reward, done = env.reward()
+                    reward = np.exp(reward*log(1.5)-log(pg_cost))
+                    if done:
+                        next_value = torch.tensor([0.],device = self.device)
+                    else:
+                        next_value = env.selectValue(self.policy_net)
+                    self.Memory.push(env,next_value,reward)
+                    if done:
+                        break
+                if i%10 == 0:
+                    print("epoch",i,"loss",self.optimize_model())
+        return self.validate(sql_list)
+    
+    ## We need to modify the reward function to make it more reasonable
+    def train_new(self,sql_list,epoch = 100):
+        # epoch = 100
+        for i in range(epoch):
+            # print("epoch",i)
+            for sql in sql_list:
+
+        #         print(sql.sql)
+        #
+
+                pg_cost = sql.getDPlantecy()
+                env = ENV(sql,self.db_info,self.pgrunner,self.device)
+                for t in count():
+                    action_list, chosen_action,all_action = self.select_action(env)
+                    left = chosen_action[0]
+                    right = chosen_action[1]
+                    env.takeAction(left,right)
+                    reward, done = env.reward_new()
+                    reward = reward
+                    if done:
+                        next_value = torch.tensor([0.],device = self.device)
+                    else:
+                        next_value = env.selectValue(self.policy_net)
+                    self.Memory.push(env,next_value,reward)
+                    if done:
+                        break
+                if i%10 == 0:
+                    print("epoch",i,"loss",self.optimize_model())
+        return self.validate(sql_list)
+    
+
+
+# In[ ]:

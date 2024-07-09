@@ -13,11 +13,11 @@ import numpy as np
 
 from aml.aqp.query_parser import parse_query
 from aml.aqp.read_ensemble import read_ensemble
+from aml.aqp.utils import save_csv
+from aml.db.db_connection import DBConnection
 
 
-
-
-
+# we need to set up logging
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +39,8 @@ def compute_ground_truth(target_path, physical_db_name, vacuum=False, query_file
     :param physical_db_name: name of the database
     :return:
     """
+
+    
 
     db_connection = DBConnection(db=physical_db_name)
     # read all queries

@@ -1,6 +1,13 @@
 import pandas as pd
 
 from AML.Synthetic.EINSTEINAI4DB.deep_rl.utils import gen_full_join_query, print_conditions
+from AML.Synthetic.EINSTEINAI4DB.deep_rl.query import Query
+from AML.Synthetic.EINSTEINAI4DB.deep_rl.schema_graph import SchemaGraph
+
+
+class schema_graph:
+    def __init__(self, schema):
+        self.schema = schema
 
 
 class DBConnection:
@@ -107,6 +114,13 @@ class TrueCardinalityEstimator:
         sql_query = full_join_query.format("COUNT(*)", where_cond)
         cardinality = self.db_connection.get_result(sql_query)
         return sql_query, cardinality
+    
+    def true_cardinality_set(self, queries):
+        """Returns a list of true cardinalities for a list of queries."""
+        cardinalities = []
+        for query in queries:
+            cardinalities.append(self.true_cardinality(query))
+        return cardinalities
 
 
 
