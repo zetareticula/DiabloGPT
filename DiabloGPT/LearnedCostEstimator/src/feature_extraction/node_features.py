@@ -154,4 +154,11 @@ def extract_features(input_path, out_path):
                         out.write(json.dumps(parsed_plan))
                         out.write('\n')
 
-            
+def get_subplan(root):
+    results = []
+    if 'Actual Rows' in root and 'Actual Total Time' in root and 'Actual Rows' in root > 0:
+        results.append((root, root['Actual Total Time'], root['Actual Rows']))
+    if 'Plans' in root:
+        for plan in root['Plans']:
+            results += get_subplan(plan)
+    return results

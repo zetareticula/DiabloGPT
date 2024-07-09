@@ -439,11 +439,14 @@ elif opt.phase == 'test_read_write':
     next_state, reward, done, info = env.step(action)
     state = next_state
     
-    
-    if done:
-        break
+    for i in range(tconfig['num_steps']):
+        action = get_action(state)
+        next_state, reward, done, info = env.step(action)
+        if done:
+            break
     env.close()
-    
+
+
     
     print('Testing Done')
 
@@ -482,8 +485,9 @@ elif opt.phase == 'test_read_write':
     # we do this so Dall-e can be used to generate images
     # while the model is still training
 
-
-    model.save_model('sl_model_params/{}_{}.pkl'.format(expr_name, epoch))
+    if epoch % 10 == 0:
+    
+    
 
 #
 #
@@ -498,7 +502,8 @@ elif opt.phase == 'test_read_write':
     # we do this so Dall-e can be used to generate images
     # while the model is still training
 
-    if i % 10 == 0:
+    if epoch % 10 == 0:
+
         model.save_model('sl_model_params/{}_{}.pkl'.format(expr_name, epoch))
 
     action = get_action(state)
@@ -506,8 +511,6 @@ elif opt.phase == 'test_read_write':
     state = next_state
     if done:
         break
-
-env.close()
 
 print('Testing Done')
 

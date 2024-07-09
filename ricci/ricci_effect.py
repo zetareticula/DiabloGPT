@@ -11,6 +11,8 @@ from FACE.structure.leaves.parametric.Parametric import Poisson
 from FACE.structure.leaves.parametric.Parametric import Gamma
 
 
+
+
 def einstAIActorCritic(env, sess, learning_rate, train_min_size, size_mem, size_predict_mem):
 # Path: Patrick/ricci/main.py
     # Compare this snippet from AML/Synthetic/deepdb/deepdb_job_ranges/aqp_spn/custom_spflow/custom_learning.py:
@@ -71,8 +73,6 @@ def einstAIActorCritic(env, sess, learning_rate, train_min_size, size_mem, size_
 
 
 
-from FACE.structure.Base import Sum, Product, assign_ids, rebuild_scopes_bottom_up
-from FACE.structure.leaves.parametric.Parametric import Categorical, Gaussian
 
 
 

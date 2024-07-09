@@ -218,12 +218,7 @@ class SelectStmtX:
         self.groupby = GroupBy(select_stmt["groupClause"]) if "groupClause" in select_stmt else None
         self.orderby = OrderBy(select_stmt["sortClause"]) if "sortClause" in select_stmt else None
 
-
-    def __str__(self,):
-        """
-
-        :type self: object
-        """
+def __str__(self,):
         res = "SELECT "
         res += ", ".join([str(x) for x in self.target_list])
         res += "\nFROM "
@@ -274,7 +269,7 @@ class Comparison:
                 self.column_list.append(self.lexpr.getColumnName())
             self.comp_kind = 1
         else:
-            #             "boolop"
+        
             self.kind = comparison["BoolExpr"]["boolop"]
             self.comp_list = [Comparison(x)
                               for x in comparison["BoolExpr"]["args"]]
@@ -342,7 +337,7 @@ class Table:
 
 class DB:
 
-    def __init__(self, schema, TREE_NUM_IN_NET=40, psqlparse=None, parse_dict=None,  parse_dict=None):
+    def __init__(self, schema, TREE_NUM_IN_NET=40, psqlparse=None, parse_dict=None):
         self.psqlparse = psqlparse
 
         parse_tree = parse_dict(schema)

@@ -1,40 +1,46 @@
-Workload Performance Prediction
-====
+# EinsteinDBGPT
 
-We propose a performance prediction system for concurrent queries using a graph embedding based model. We first propose a graph model to encode query features, where each vertex is a node in the query plan of a query and each edge between two vertices denotes the correlations between them, e.g., sharing the same table/index or competing resources. We then propose a prediction model, in which we use a graph embedding network to encode the graph features and adopt a prediction network to predict query performance using deep learning.
+## Description
+EinsteinDBGPT is a powerful AI language model trained on the EinsteinDB, MilevaDB, FIDel, and VioletaBFT projects. It can generate text based on prompts related to these projects, providing detailed descriptions, technical explanations, and more.
 
-## Before you run
+## Features
+- Generate text based on user prompts related to EinsteinDB, MilevaDB, FIDel, and VioletaBFT
+- Provide detailed descriptions of the projects' architecture, components, and functionalities
+- Create technical explanations and examples for using EinsteinDB, MilevaDB, FIDel, and VioletaBFT
+- Support for multiple programming languages and frameworks
 
-1. Install dependencies.
-
-```
-pip install -r requirements.txt
-```
-
-2. Download the dataset from https://cloud.tsinghua.edu.cn/f/b6f4e92ba387445cb825/  (pmodel_data.zip), and put the unzip directory to the current main path (./pmodel_data)
+## Installation
+1. Clone the repository:
+  ```bash
+  git clone https://github.com/your-username/EinsteinDBGPT.git
+  ```
+2. Install the required dependencies:
+  ```bash
+  pip install -r requirements.txt
+  ```
 
 ## Usage
+1. Import the EinsteinDBGPT module:
+  ```python
+  from einsteindbgpt import EinsteinDBGPT
+  ```
+2. Create an instance of the EinsteinDBGPT model:
+  ```python
+  model = EinsteinDBGPT()
+  ```
+3. Generate text based on a prompt:
+  ```python
+  prompt = "EinsteinDB is a distributed key-value storage engine..."
+  generated_text = model.generate_text(prompt)
+  print(generated_text)
+  ```
 
-1. Open up performance-graphembedding-checkpoint.ipynb, and reproduce by following the steps
+## Contributing
+Contributions are welcome! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request.
 
-**Note**: You can jump over the workload and graph generation procedures (which need to connect to your own database), and direct run the ``Graph Embedding Algorithm'' part with the prepared data (in ./pmodel_data).
+## License
+This project is licensed under the [MIT License](LICENSE).
 
-2. Compact large graph using ``graph-generation-merged.py''
-
-
-## Cite
-
-Please cite our paper if you find this work interesting:
-
-```
-@article{DBLP:journals/pvldb/ZhouSLF20,
-  author    = {Xuanhe Zhou and
-               Ji Sun and
-               Guoliang Li and
-               Jianhua Feng},
-  title     = {Query Performance Prediction for Concurrent Queries using Graph Embedding},
-  journal   = {Proc. {VLDB} Endow.},
-  pages     = {1416--1428},
-  year      = {2020},
-}
-```
+## Acknowledgements
+- The EinsteinDB, MilevaDB, FIDel, and VioletaBFT projects for providing the inspiration for this project.
+- OpenAI for their GPT model and the associated libraries.

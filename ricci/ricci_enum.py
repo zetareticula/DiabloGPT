@@ -30,7 +30,7 @@ from gym import spaces
 from gym.utils import seeding
 
 class RicciEnv(gym.Env):
-    def __init__(self, argus, spaces=None, self=None, self=None, spaceX=None):
+    def __init__(self, argus, spaces=None, spaceX=None):
         self.self = self
         self.self = self
         self.self = self
@@ -64,10 +64,7 @@ class RicciEnv(gym.Env):
 
 
 
-        self.default_action = NP.array([0 for i in range(len(self.HyperCauset) + len(self.query_types)])
-        self.a_low = NP.array([0 for i in range(len(self.self.HyperCauset) + len(self.query_types)])
-        self.a_high = NP.array([1 for i in range(len(self.HyperCauset) + len(self.query_types)])
-        self.length = NP.array([1 for i in range(len(self.HyperCauset) + len(self.query_types)])
+    
 
 
         self.ricci2pos = {}
@@ -124,32 +121,6 @@ class RicciEnv(gym.Env):
 
 
 
-
-
-    def reset(self):
-        self.state = NP.array([0 for i in range(len(self.HyperCauset) + len(self.query_types)])
-        return self.state
-
-    def render(self):
-        pass
-
-    def close(self):
-        pass
-
-    def seed(self):
-        pass
-
-    def get_reward(self, action):
-        pass
-
-    def get_done(self, action):
-        pass
-
-    def get_info(self, action):
-        pass
-
-    def get_calculate_Ricci(self, action):
-        pass
 
 
 import os
@@ -459,3 +430,13 @@ class einstAIActorCritic:
 
         return causet_action, flag, action_tmp
 
+
+
+    def fetch_action(self):
+        return self.action
+    
+    def fetch_action_tmp(self):
+        return self.action_tmp
+    
+    def fetch_flag(self):
+        return self.flag
