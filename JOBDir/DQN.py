@@ -11,19 +11,31 @@ import torch.optim as optim
 import numpy as np
 from math import log
 from itertools import count
+from sqlSample import JoinTree
 
+
+####
+# The DQN model is used to train the model
+# The model is trained by the reward function
 class ENV(object):
-    def __init__(self,sql,db_info,pgrunner,device):
-        self.sel = JoinTree(sql,db_info,pgrunner,device )
+    def __init__(self, sql, db_info, pgrunner, device):
+        #JoinTree shall be initialized with the sql, db_info, pgrunner, device
+        self.sel = JoinTree(sql, db_info, pgrunner, device)
+        #sql is the sql query we need to optimize
         self.sql = sql
+        #db_info is the database information for the sql query
         self.hashs = ""
+        #pgrunner is the PostgresRunner object
         self.table_set = set([])
+        #device is the device we use to train the model
         self.res_table = []
+        #res_table is the result table
         self.init_table = None
-        self.planSpace = 0#0:leftDeep,1:bushy
+        #init_table is the initial table
+        self.planSpace = 0  # 0:leftDeep,1:bushy
 
-    def actionValue(self,left,right,model):
-        self.sel.joinTables(left,right,fake = True)
+    def actionValue(self, left, right, model):
+        self.sel.joinTables(left, right, fake=True)
         res_Value = self.selectValue(model)
         self.sel.total -= 1
         self.sel.aliasnames_root_set.remove(self.sel.total)
@@ -31,61 +43,61 @@ class ENV(object):
         self.sel.aliasnames_fa.pop(self.sel.right_son[self.sel.total])
         return res_Value
 
-    def selectValue(self,model):
+    def selectValue(self, model):
         tree_state = []
         for idx in self.sel.aliasnames_root_set:
-            if not idx in self.sel.aliasnames_fa:
-                tree_state.append(self.sel.encode_tree_regular(model,idx))
-        res = torch.cat(tree_state,dim = 0)
-        return model.logits(res,self.sel.join_matrix)
+            if idx not in self.sel.aliasnames_fa:
+                tree_state.append(self.sel.encode_tree_regular(model, idx))
+        res = torch.cat(tree_state, dim=0)
+        return model.logits(res, self.sel.join_matrix)
 
-    def selectValueFold(self,fold):
+    def selectValueFold(self, fold):
         tree_state = []
         for idx in self.sel.aliasnames_root_set:
-            if not idx in self.sel.aliasnames_fa:
-                tree_state.append(self.sel.encode_tree_fold(fold,idx))
-            #         res = torch.cat(tree_state,dim = 0)
+            if idx not in self.sel.aliasnames_fa:
+                tree_state.append(self.sel.encode_tree_fold(fold, idx))
         return tree_state
-        return fold.add('logits',tree_state,self.sel.join_matrix)
 
-
-
-    def takeAction(self,left,right):
-        self.sel.joinTables(left,right)
+    def takeAction(self, left, right):
+        self.sel.joinTables(left, right)
         self.hashs += left
         self.hashs += right
         self.hashs += " "
 
     def hashcode(self):
-        return self.sql.sql+self.hashs
-    def allAction(self,model):
+        return self.sql.sql + self.hashs
+
+    def allAction(self, model):
         action_value_list = []
         for one_join in self.sel.join_candidate:
             l_fa = self.sel.findFather(one_join[0])
-            r_fa  =self.sel.findFather(one_join[1])
-            if self.planSpace ==0:
-                flag1 = one_join[1] ==r_fa and l_fa !=one_join[0]
-                if l_fa!=r_fa and (self.sel.total == 0 or flag1):
-                    action_value_list.append((self.actionValue(one_join[0],one_join[1],model),one_join))
-            elif self.planSpace==1:
-                if l_fa!=r_fa:
-                    action_value_list.append((self.actionValue(one_join[0],one_join[1],model),one_join))
+            r_fa = self.sel.findFather(one_join[1])
+            if self.planSpace == 0:
+                flag1 = one_join[1] == r_fa and l_fa != one_join[0]
+                if l_fa != r_fa and (self.sel.total == 0 or flag1):
+                    action_value_list.append((self.actionValue(one_join[0], one_join[1], model), one_join))
+            elif self.planSpace == 1:
+                if l_fa != r_fa:
+                    action_value_list.append((self.actionValue(one_join[0], one_join[1], model), one_join))
         return action_value_list
-    def reward(self,):
-        if self.sel.total+1 == len(self.sel.from_table_list):
-            return log( self.sel.plan2Cost())/log(1.5), True
+
+    def reward(self):
+        if self.sel.total + 1 == len(self.sel.from_table_list):
+            return log(self.sel.plan2Cost()) / log(1.5), True
         else:
-            return 0,False
+            return 0, False
 
     def reward_new(self):
-        if self.sel.total+1 == len(self.sel.from_table_list):
+        if self.sel.total + 1 == len(self.sel.from_table_list):
             return self.sel.plan2Cost(), True
         else:
-            return 0,False
+            return 0, False
+
 
 Transition = namedtuple('Transition',
                         ('env', 'next_value', 'this_value'))
-# bestJoinTreeValue = {}
+
+
 class ReplayMemory(object):
 
     def __init__(self, capacity):
@@ -93,34 +105,36 @@ class ReplayMemory(object):
         self.memory = []
         self.position = 0
         self.bestJoinTreeValue = {}
+
     def push(self, *args):
         """Saves a transition."""
         if len(self.memory) < self.capacity:
             self.memory.append(None)
-        data =  Transition(*args)
+        data = Transition(*args)
         hashv = data.env.hashcode()
         next_value = data.next_value
-        if hashv in self.bestJoinTreeValue and self.bestJoinTreeValue[hashv]<data.this_value:
-            if self.bestJoinTreeValue[hashv]<next_value:
+        if hashv in self.bestJoinTreeValue and self.bestJoinTreeValue[hashv] < data.this_value:
+            if self.bestJoinTreeValue[hashv] < next_value:
                 next_value = self.bestJoinTreeValue[hashv]
         else:
-            self.bestJoinTreeValue[hashv]  = data.this_value
-        data = Transition(data.env,self.bestJoinTreeValue[hashv],data.this_value)
+            self.bestJoinTreeValue[hashv] = data.this_value
+        data = Transition(data.env, self.bestJoinTreeValue[hashv], data.this_value)
         position = self.position
         self.memory[position] = data
-        #         self.position
         self.position = (self.position + 1) % self.capacity
 
     def sample(self, batch_size):
-        if len(self.memory)>batch_size:
+        if len(self.memory) > batch_size:
             return random.sample(self.memory, batch_size)
         else:
             return self.memory
 
     def __len__(self):
         return len(self.memory)
-    def resetMemory(self,):
-        self.memory =[]
+
+    def resetMemory(self):
+        self.memory = []
+
     def resetbest(self):
         self.bestJoinTreeValue = {}
 

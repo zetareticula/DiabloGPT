@@ -1,6 +1,8 @@
 import logging
 from time import perf_counter
 
+
+
 import numpy as np
 # from mumford_switch.code_generation.convert_conditions import convert_range
 # from mumford_switch.structure.base import Sum
@@ -13,6 +15,19 @@ import numpy as np
 # # from FACE.algorithms.Inference import likelihood
 # from FACE.structure.Base import Product, Sum
 #
+
+from mumfordswitch.code_generation.convert_conditions import convert_range
+from mumfordswitch.structure.base import Sum
+from mumfordswitch.algorithms.inference import likelihood
+from mumfordswitch.structure.base import Product
+
+# from FACE.algorithms.Inference import likelihood
+# from FACE.structure.Base import Product, Sum
+
+from FACE.algorithms.Inference import likelihood
+from FACE.structure.Base import Product, Sum
+
+
 
 
 logger = logging.getLogger(__name__)
@@ -31,9 +46,8 @@ def expectation(FACE, feature_scope, inverted_features, ranges, node_expectation
     global parameters
     evidence_scope = set([i for i, r in enumerate(ranges[0]) if r is not None])
     evidence = ranges
-
     assert not (len(evidence_scope) > 0 and evidence is None)
-
+   #we need to check if the evidence is not None
     relevant_scope = set()
     relevant_scope.update(evidence_scope)
     relevant_scope.update(feature_scope)
@@ -52,7 +66,6 @@ def expectation(FACE, feature_scope, inverted_features, ranges, node_expectation
         # generated C++ code
         if use_generated_code and applicable:
             time_start = perf_counter()
-            import optimized_inference
 
             spn_func = getattr(optimized_inference, f'FACE{spn_id}')
             result = np.array([[spn_func(*parameters)]])
