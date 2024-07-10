@@ -7,7 +7,7 @@
 #
 
 
-# Path: Patrick/src-EinsteinDBGPT3/einsteindb-gpt3-da-vinci-1/create_program.sh
+# Path: Patrick/src-EinsteinDBGPT3/diablogpt-da-vinci-1/create_program.sh
 
 
 function red_c()

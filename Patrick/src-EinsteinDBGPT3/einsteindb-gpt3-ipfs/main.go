@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "einsteindb-gpt3-ipfs/routers"
+	_ "diablogpt-ipfs/routers"
 
 	"github.com/astaxie/beego"
 	// "github.com/astaxie/beego"

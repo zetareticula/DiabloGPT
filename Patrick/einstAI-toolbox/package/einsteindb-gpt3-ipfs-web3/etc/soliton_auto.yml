@@ -36,7 +36,7 @@ handlers:
 
         h:
                 class: RotatingFileHandler
-                filepath: "/var/log/einsteindb-gpt3-ipfs-web3/einsteindb-gpt3-ipfs-web3.log"
+                filepath: "/var/log/diablogpt-ipfs-web3/diablogpt-ipfs-web3.log"
                 mode: O_APPEND
                 bufferSize: 0
                 # 30 * 1000 ms -> 30 seconds
@@ -50,7 +50,7 @@ handlers:
 
         h2:
                 class: RotatingFileHandler
-                filepath: "/var/log/einsteindb-gpt3-ipfs-web3/einsteindb-gpt3-ipfs-web3.log"
+                filepath: "/var/log/diablogpt-ipfs-web3/diablogpt-ipfs-web3.log"
                 mode: O_APPEND
                 bufferSize: 0
                 # 30 * 1000 ms -> 30 seconds
@@ -63,7 +63,7 @@ handlers:
 
         h3:
                 class: RotatingFileHandler
-                filepath: "/var/log/einsteindb-gpt3-ipfs-web3/einsteindb-gpt3-ipfs-web3.log"
+                filepath: "/var/log/diablogpt-ipfs-web3/diablogpt-ipfs-web3.log"
                 mode: O_APPEND
                 bufferSize: 0
                 # 30 * 1000 ms -> 30 seconds
@@ -76,7 +76,7 @@ handlers:
 
         h4:
                 class: RotatingFileHandler
-                filepath: "/var/log/einsteindb-gpt3-ipfs-web3/einsteindb-gpt3-ipfs-web3.log"
+                filepath: "/var/log/diablogpt-ipfs-web3/diablogpt-ipfs-web3.log"
                 mode: O_APPEND
                 bufferSize: 0
                 # 30 * 1000 ms -> 30 seconds

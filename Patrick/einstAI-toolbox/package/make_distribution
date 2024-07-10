@@ -2,7 +2,7 @@
 
 # This script creates a program.
 
-# Path: Patrick/src-EinsteinDBGPT3/einsteindb-gpt3-da-vinci-1/create_program.sh
+# Path: Patrick/src-EinsteinDBGPT3/diablogpt-da-vinci-1/create_program.sh
 
 
 
@@ -52,18 +52,18 @@ done
 
 exit 0
 
-# app_name: einsteindb-gpt3-da-vinci-1, program dir: einsteindb-gpt3-da-vinci-1
+# app_name: diablogpt-da-vinci-1, program dir: diablogpt-da-vinci-1
 # mkdir program dir...
 # copy code & scripts...
 # copy systemd service...
 # copy logrotate...
-# einsteindb-gpt3-da-vinci-1: make package einsteindb-gpt3-da-vinci-1.tgz...
+# diablogpt-da-vinci-1: make package diablogpt-da-vinci-1.tgz...
 
 #
 #
 #
 #
-# Compare this snippet from Patrick/src-EinsteinDBGPT3/einsteindb-gpt3-da-vinci-1/make_distribution.sh:
+# Compare this snippet from Patrick/src-EinsteinDBGPT3/diablogpt-da-vinci-1/make_distribution.sh:
 # #!/bin/bash
 # #
 #
@@ -73,7 +73,7 @@ exit 0
 # #
 #
 #
-# # Path: Patrick/src-EinsteinDBGPT3/einsteindb-gpt3-da-vinci-1/make_distribution.sh
+# # Path: Patrick/src-EinsteinDBGPT3/diablogpt-da-vinci-1/make_distribution.sh
 #
 #
 # function red_c()

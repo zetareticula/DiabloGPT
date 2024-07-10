@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"einsteindb-gpt3-ipfs/controllers"
+	"diablogpt-ipfs/controllers"
 
 	"github.com/astaxie/beego"
 )

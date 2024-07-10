@@ -12,7 +12,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 
-	"einsteindb-gpt3-ipfs/base"
+	"diablogpt-ipfs/base"
 )
 
 type TaskController struct {
