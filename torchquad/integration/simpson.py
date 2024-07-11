@@ -1,6 +1,8 @@
 from autoray import numpy as anp
-from loguru import logger
+from autoray import logger
+
 import warnings
+
 
 from .newton_cotes import NewtonCotes
 

@@ -3,7 +3,6 @@ import json
 from src.feature_extraction.predicate_features import *
 from src.feature_extraction.node_operations import *
 
-
 def class2json(instance):
     if instance is None:
         return json.dumps({})

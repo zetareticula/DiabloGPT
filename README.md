@@ -1,9 +1,6 @@
-<img src="./RETRO.png" width="500px"></img>
+# DiabloGPT - Pytorch
 
-## DiabloGPT - Pytorch
-
-Query Graph (AI4DB) for Zero-shot learning in the context of <a href="https://arxiv.org/abs/2112.04426">learning transferable features</a> using Zeta Reticula's DiabloGPT.
-
+Query Graph (AI4DB) for Zero-shot learning in the context of <a href="https://arxiv.org/abs/2112.04426">learning transferable features</a> using Zeta Reticula's DiabloGPT. DiabloGPT uses embeddings for columns, tables, and other query components to ensure transferability. We design a feature representation that is independent of the specific schema.
 
 ## DiabloGPT Training Wrapper
 
@@ -29,7 +26,7 @@ diablo_gpt = DIABLOGPT(
 ).cuda()
 
 wrapper = TrainingWrapper(
-    diablogpt = diablogpt,                                 # path to retro instance
+    diablogpt = diablogpt,                                 # path to diablogpt instance
     knn = 2,                                       # knn (2 in paper was sufficient)
     chunk_size = 64,                               # chunk size (64 in paper)
     documents_path = './text_folder',              # path to folder of text
@@ -85,7 +82,7 @@ sampled = wrapper.generate(prompt, filter_thres = 0.9, temperature = 1.0) # (1, 
 If you wish to force a reprocess of the training data, simply run your script with a `REPROCESS=1` environment flag as so
 
 ```bash
-$ REPROCESS=1 python train.py
+REPROCESS=1 python train.py
 ```
 
 ## DIABLOGPT Datasets
@@ -95,7 +92,6 @@ The `DIABLOGPTdataset` class accepts paths to a number of memmapped numpy arrays
 You can use this to easily assemble the data for `DIABLOGPT` training, if you do not wish to use the `TrainingWrapper` from above.
 
 Furthermore, all the functions needed to create the necessary memmapped data is in the sections to follow.
-
 
 ```python
 import torch
@@ -155,7 +151,7 @@ train_dl = iter(DataLoader(train_ds, batch_size = 2))
 
 # one forwards and backwards
 
-retro = RETRO(
+diablogpt = DIABLOGPT(
     max_seq_len = 2048,                      # max sequence length
     enc_dim = 896,                           # encoder model dimension
     enc_depth = 3,                           # encoder depth
@@ -173,7 +169,7 @@ seq, retrieved = map(lambda t: t.cuda(), next(train_dl))
 # seq       - (2, 2049)         - 1 extra token since split by seq[:, :-1], seq[:, 1:]
 # retrieved - (2, 32, 2, 128)   - 128 since chunk + continuation, each 64 tokens
 
-loss = retro(
+loss = diablogpt(
     seq,
     retrieved,
     return_loss = True
@@ -190,7 +186,7 @@ This repository will use the default tokenizer (sentencepiece) for the cased ver
 ex. masked mean pooled representation
 
 ```python
-from retro_pytorch.retrieval import bert_embed, tokenize
+from diablogpt_pytorch.retrieval import bert_embed, tokenize
 
 ids = tokenize([
     'hello world',
@@ -202,9 +198,8 @@ embeds = bert_embed(ids) # (2, 768) - 768 is hidden dimension of BERT
 
 ex. CLS token representation
 
-
 ```python
-from retro_pytorch.retrieval import bert_embed, tokenize
+from diablogpt_pytorch.retrieval import bert_embed, tokenize
 
 ids = tokenize([
     'hello world',
@@ -217,7 +212,7 @@ embeds = bert_embed(ids, return_cls_repr = True) # (2, 768)
 Create your chunks and chunk start indices (for calculating sequence ranges for autoregressive training) using `text_folder_to_chunks_`
 
 ```python
-from retro_pytorch.retrieval import text_folder_to_chunks_
+from diablogpt_pytorch.retrieval import text_folder_to_chunks_
 
 stats = text_folder_to_chunks_(
     folder = './text_folder',
@@ -239,7 +234,7 @@ stats = text_folder_to_chunks_(
 You can turn your memmapped chunks numpy array into embeddings and a faiss index with one command
 
 ```python
-from retro_pytorch.retrieval import chunks_to_index_and_embed
+from diablogpt_pytorch.retrieval import chunks_to_index_and_embed
 
 index, embeddings = chunks_to_index_and_embed(
     num_chunks = 1000,
@@ -257,7 +252,7 @@ neighbor_embeddings = embeddings[indices]       # (1, 2, 768)
 You can also directly calculate the nearest neighbor file necessary for training, with `chunks_to_precalculated_knn_` command
 
 ```python
-from retro_pytorch.retrieval import chunks_to_precalculated_knn_
+from diablogpt_pytorch.retrieval import chunks_to_precalculated_knn_
 
 chunks_to_precalculated_knn_(
     num_chunks = 1000,
