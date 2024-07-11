@@ -1,4 +1,6 @@
-from loguru import logger
+from ..utils import logger
+
+
 
 from .set_precision import set_precision
 
@@ -23,3 +25,8 @@ def enable_cuda(data_type="float32"):
         logger.warning(
             "Error enabling CUDA. cuda.is_available() returned False. CPU will be used."
         )
+
+    return torch.cuda.is_available()
+
+
+

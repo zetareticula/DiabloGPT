@@ -1,5 +1,12 @@
-from torchquad import Boole, Trapezoid, Simpson, VEGAS, MonteCarlo
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+import numpy as np
+import os
+import sys
 
+from torchquad import Boole, Trapezoid, Simpson, VEGAS, MonteCarlo
 # TODO test these in the future
 # from ..plots.plot_convergence import plot_convergence
 # from ..plots.plot_runtime import plot_runtime
@@ -7,7 +14,17 @@ from torchquad import Boole, Trapezoid, Simpson, VEGAS, MonteCarlo
 from torchquad import enable_cuda
 from torchquad import set_precision
 from torchquad import set_log_level
-from loguru import logger
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+
+
+
+
+
 
 
 def _deployment_test():
@@ -60,3 +77,9 @@ def _deployment_test():
     logger.info("####################################")
     logger.info("############ ALL DONE. #############")
     logger.info("####################################")
+
+    return True
+
+if __name__ == "__main__":
+    _deployment_test()
+

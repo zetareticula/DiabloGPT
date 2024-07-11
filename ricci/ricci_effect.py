@@ -9,6 +9,18 @@ from FACE.structure.leaves.parametric.Parametric import Categorical, Gaussian
 from FACE.structure.leaves.parametric.Parametric import Bernoulli
 from FACE.structure.leaves.parametric.Parametric import Poisson
 from FACE.structure.leaves.parametric.Parametric import Gamma
+from FACE.structure.leaves.parametric.Parametric import Exponential
+from FACE.structure.leaves.parametric.Parametric import Beta
+from FACE.structure.leaves.parametric.Parametric import Dirichlet
+from FACE.structure.leaves.parametric.Parametric import Multinomial
+
+from FACE.structure.leaves.parametric.Parametric import IdentityNumericLeaf
+from FACE.structure.leaves.parametric.Parametric import IdentityCategoricalLeaf
+from FACE.structure.leaves.parametric.Parametric import IdentityMultinomialLeaf
+
+
+from FACE.algorithms.splitting.Base import preproc, split_data_by_clusters
+from FACE.algorithms.splitting.RDC import getIndependentRDCGroups_py
 
 
 
@@ -186,7 +198,4 @@ if __name__ == "__main__":
             break
 
         cur_state = new_state
-
-
-
 
