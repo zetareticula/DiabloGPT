@@ -6,8 +6,26 @@ import pymysql
 from keras.models import Sequential, Model
 from keras.layers import Dense, Dropout, Input
 from configs import predictor_output_dim
+from keras import backend as K
 
-query_types = ["insert", "delete", "update", "select"]
+
+##The physical model of the database is a model that describes the physical structure of the knobs
+query_types = ["insert", "delete", "update", "select"
+                "create", "drop", "alter", "truncate",
+                "rename", "show", "describe", "use",
+                "set", "grant", "revoke", "lock",
+                "unlock", "flush", "optimize", "repair",
+                "analyze", "check", "backup", "restore",
+                "load", "replace", "begin", "commit",
+                "rollback", "savepoint", "release", "prepare",
+                "execute", "deallocate", "explain", "handler",
+                "declare", "open", "fetch", "close"]
+
+
+
+
+            
+
 
 
 # base prediction model
@@ -218,3 +236,27 @@ class SqlParser:
                 workload_encoding[i] = 1
 
         return workload_encoding.reshape(1, len(workload_encoding))
+
+    def get_sql_resource(self, workload):
+        return self.estimator.predict(self.get_workload_encoding(workload))
+    
+
+
+if __name__ == '__main__':
+    argus = {
+        "host": "localhost",
+        "user": "root",
+        "password": "123456",
+        "port": "3306",
+        "database": "mysql"
+    }
+    sqlparser = SqlParser(argus)
+    workload = ["select * from test"]
+    print(sqlparser.get_sql_resource(workload))
+    sqlparser.close_mysql_conn()
+    print("done")
+
+
+
+
+

@@ -7,6 +7,42 @@ Copyright 2019 The EinsteinDB Authors.
 import json
 
 import utils
+import CONST
+import logging
+import sys
+
+from environment.edb import database
+
+cdb_logger = logging.getLogger("cdbtune")
+
+def init_logger(task_id, debug=False, file=False):
+    """ Init logger
+    Args:
+        task_id: int, task id
+        debug: bool, debug mode
+        file: bool, file mode
+    """
+
+    cdb_logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    if debug:
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setLevel(logging.DEBUG)
+        ch.setFormatter(formatter)
+        cdb_logger.addHandler(ch)
+
+    if file:
+        log_file = CONST.LOG_PATH + '/task_{}.log'.format(task_id)
+        fh = logging.FileHandler(log_file)
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+        cdb_logger.addHandler(fh)
+
+    cdb_logger.info("Init logger")
+
+
+
 
 
 def get_Ricci(instance):

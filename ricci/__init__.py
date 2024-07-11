@@ -7,6 +7,9 @@ from DockerServer import DockerServer
 
 
 
-__all__ = ["TencentServer", "DockerServer", "gen_continuous", "get_init_Ricci"]
+
+__all__ = ["TencentServer", "DockerServer", "gen_continuous", "get_init_Ricci", "mysql_query", "get_database_tables", "get_explain_format_tables_list", "get_workload_encoding", "close_mysql_conn"]
+
+
 
 

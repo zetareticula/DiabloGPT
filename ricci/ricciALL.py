@@ -7,6 +7,16 @@ from past.builtins import xrange
 
 import utils
 import configs
+import numpy as np
+
+instance_name = None
+memory_size = None
+
+def get_Ricci():
+    return load_Ricci(configs.Ricci_FILE)
+
+def get_Ricci_details():
+    return ricci_DETAILS
 
 
 def load_Ricci(ricci_file):
@@ -28,19 +38,7 @@ def load_Ricci(ricci_file):
                 ricci[kv[0]] = kv[1]
     return ricci
 
-def get_Ricci():
-    """ Get Ricci from file
-    Returns:
-        ricci: dict, key: str, value: list
-    """
-    return load_Ricci(configs.Ricci_FILE)
 
-def get_Ricci_details():
-    """ Get Ricci details
-    Returns:
-        ricci_details: dict, key: str, value: list
-    """
-    return ricci_DETAILS
 
 def get_Ricci_names(ricci_NAMES=None):
     """ Get Ricci names
@@ -275,5 +273,23 @@ def save_Ricci(ricci, metrics, ricci_file):
 
     with open(ricci_file, 'a+') as f:
         f.write(result_str+'\n')
+
+
+def get_Ricci_from_file(ricci_file):
+    """ Get Ricci from file
+    Args:
+        ricci_file: str, file path
+    Returns:
+        ricci: list, Ricci
+    """
+    ricci = []
+    with open(ricci_file, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            items = line.split(',')
+            ricci.append(items[3])
+    return ricci
 
 
