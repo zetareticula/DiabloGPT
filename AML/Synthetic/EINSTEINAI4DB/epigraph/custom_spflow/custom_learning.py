@@ -1,5 +1,4 @@
 import logging
-
 import numpy as np
 from aqp_spn.aqp_leaves import Categorical
 from aqp_spn.aqp_leaves import IdentityNumericLeaf
@@ -258,3 +257,5 @@ def get_split_cols_RDC_py(max_sampling_threshold_cols=10000, threshold=0.3, ohe=
             return split_data_by_clusters(local_data, clusters, scope, rows=False)
 
     return split_cols_RDC_py
+
+

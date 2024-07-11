@@ -16,3 +16,6 @@ def set_log_level(log_level: str):
         format="<green>{time:HH:mm:ss}</green>|TQ-<blue>{level}</blue>| <level>{message}</level>",
     )
     logger.debug(f"Setting LogLevel to {log_level}")
+
+    return logger
+

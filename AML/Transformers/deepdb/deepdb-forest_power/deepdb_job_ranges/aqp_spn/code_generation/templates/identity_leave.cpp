@@ -46,3 +46,7 @@ if (relevantScope[{node_scope}]) {{
     }}
     {final_assert}
 }}
+void CategoricalLeave{node_id}::apply(const std::vector<std::vector<floating_data_type>>& nodeIntermediateResult, std::vector<floating_data_type>& nodeResult) const {{
+    nodeResult[{node_id}] = nodeIntermediateResult[{node_id}];
+}}
+// End of comparison

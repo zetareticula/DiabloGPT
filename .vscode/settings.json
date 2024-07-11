@@ -1,5 +1,6 @@
 {
     "python.analysis.extraPaths": [
         "./AML/Transformers/deepdb/deepdb-forest_power/deepdb_job_ranges"
-    ]
+    ],
+    "C_Cpp.errorSquiggles": "disabled"
 }

@@ -2,6 +2,62 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torchquad as tq
+from torchquad import Boole, Trapezoid, Simpson, VEGAS, MonteCarlo
+from torchquad import enable_cuda
+from torchquad import set_precision
+from torchquad import set_log_level
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+def _deployment_test():
+    """This method is used to check successful deployment of torch.
+    It should not be used by users. We use it internally to check
+    successful deployment of torchquad.
+    """
+    import torch
+
+    set_log_level("INFO")
+    logger.info("####################################")
+    logger.info("######## TESTING DEPLOYMENT ########")
+    logger.info("####################################")
+    logger.info("")
+
+    logger.info("Testing CUDA init... ")
+    # Test inititialization on GPUs if available
+    enable_cuda()
+    set_precision("double")
+    logger.info("Done.")
+
+    logger.info("")
+    logger.info("####################################")
+
+    logger.info("Initializing integrators... ")
+    tp = Trapezoid()
+    sp = Simpson()
+    boole = Boole()
+    mc = MonteCarlo()
+    vegas = VEGAS()
+    logger.info("Done.")
+
+    logger.info("####################################")
+    logger.info("######## DEPLOYMENT SUCCESSFUL ########")
+    logger.info("####################################")
+    logger.info("")
+
+    return tp, sp, boole, mc, vegas
+
+def set_log_level(level):
+    """Set the logging level for torchquad.
+
+    Args:
+        level (str): Logging level. Choose from "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
+    """
+    logger.setLevel(level)
+    logging.basicConfig(level=level)
+
+    
 
 
 

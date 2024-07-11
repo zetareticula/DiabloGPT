@@ -10,3 +10,7 @@ PYBIND11_MODULE(optimized_inference, m){{
     m.doc() = "Generated mumford_switch ensemble code";
     {registration}
 }}
+
+
+
+
