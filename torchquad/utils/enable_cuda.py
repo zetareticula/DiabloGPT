@@ -29,4 +29,7 @@ def enable_cuda(data_type="float32"):
     return torch.cuda.is_available()
 
 
+# if __name__ == "__main__":
+#     enable_cuda()
+#     logger.info("CUDA enabled.")
 

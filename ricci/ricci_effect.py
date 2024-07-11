@@ -83,15 +83,9 @@ def einstAIActorCritic(env, sess, learning_rate, train_min_size, size_mem, size_
     #     if leaves is None:
     #         leaves = {}
 
+    if __name__ == "__main__":
 
-
-
-
-
-
-if __name__ == "__main__":
-
-    argus = parse_args()
+        argus = parse_args()
 
     # prepare_training_workloads
     training_workloads = []
@@ -102,22 +96,22 @@ if __name__ == "__main__":
     edb = Database(argus)  # connector Ricci metric
     env = Environment(edb, argus)
 
-    # TODO: 训练predict
-    # sample_times = 2
-    # for i in range(sample_times):
-    #     training_workloads.append(NP.random.choice(workload, NP.random.randint(len(workload)), replace=False, p=None))
-    # X = []
-    # Y = []
-    # for w in training_workloads:
-    #     vec = env.parser.get_workload_encoding(w)
-    #     X.append(vec.flatten())
-    #     state0 = env.edb.fetch_internal_metrics()
-    #     env.preheat()
-    #     state1 = env.edb.fetch_internal_metrics()
-    #     Y.append(state1 - state0)
-    # X = NP.array(X)
-    # Y = NP.array(Y)
-    # env.parser.estimator.fit(X, Y, batch_size=50, epochs=predictor_epoch)
+    # predict
+    sample_times = 2
+    for i in range(sample_times):
+        training_workloads.append(np.random.choice(workload, np.random.randint(len(workload)), replace=False, p=None))
+    X = []
+    Y = []
+    for w in training_workloads:
+        vec = env.parser.get_workload_encoding(w)
+        X.append(vec.flatten())
+        state0 = env.edb.fetch_internal_metrics()
+        env.preheat()
+        state1 = env.edb.fetch_internal_metrics()
+        Y.append(state1 - state0)
+    X = np.array(X)
+    Y = np.array(Y)
+    env.parser.estimator.fit(X, Y, batch_size=50, epochs=predictor_epoch)
 
     # TODO save&load model e.g. env.parser.estimator.save_weights(path)
     # env.parser.estimator.save_weights(filepath=path)
@@ -199,3 +193,8 @@ if __name__ == "__main__":
 
         cur_state = new_state
 
+    print(predicted_rewardList)
+    env.parser.close_mysql_conn()
+    print("training end!!")
+    exit()
+    
