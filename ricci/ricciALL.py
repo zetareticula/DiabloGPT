@@ -293,3 +293,19 @@ def get_Ricci_from_file(ricci_file):
     return ricci
 
 
+def get_Ricci_metrics(ricci_file):
+    """ Get Ricci metrics from file
+    Args:
+        ricci_file: str, file path
+    Returns:
+        metrics: list, metrics
+    """
+    metrics = []
+    with open(ricci_file, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            items = line.split(',')
+            metrics.append([items[0], items[1], items[2]])
+    return metrics

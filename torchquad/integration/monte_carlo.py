@@ -1,6 +1,6 @@
-from autoray import numpy as anp
+from autoray import numpy as anp # type: ignore
 from autoray import infer_backend
-from loguru import logger
+from loguru import logger # type: ignore
 
 from .base_integrator import BaseIntegrator
 from .utils import _setup_integration_domain

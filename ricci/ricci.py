@@ -42,7 +42,12 @@ def init_logger(task_id, debug=False, file=False):
     cdb_logger.info("Init logger")
 
 
+def os_quit():
+    """ Quit the program
+    """
 
+    cdb_logger.info("Quit the program")
+    sys.exit(0)
 
 
 def get_Ricci(instance):

@@ -2,8 +2,8 @@
 
 
 Source code of Feature Encoding and Model Training for cardinality and cost estimation based on PostgreSQL Execution Plans.
-The tree-structured model can generate representations for sub-plans which could be used by other query processing tasks like Join Reordering,
-Materialized View and even Index Selection.
+
+The tree-structured model can generate representations for sub-plans which could be used by other query processing tasks like Join Reordering, Materialized View and even Index Selection.
 
 ## 1. Feature Encoding
 

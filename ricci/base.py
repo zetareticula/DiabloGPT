@@ -1,14 +1,23 @@
-# -*- coding: utf-8 -*-
-"""
-desciption: err or other constant information
-"""
 from enum import IntEnum
 import logging
 import os
-import requests # type: ignore
+import requests
 import sys
+import time
 
-
+# Desc: Base module for cdbtune
+#
+# This module contains the following functions:
+# 1. Logger: A function that returns a logger object
+# 2. init_logger: A function that initializes the logger
+# 3. CONST: A class that contains constants used in the project
+# 4. Err: An enumeration class that contains error codes
+# 5. Err_Detail: A class that contains error descriptions
+# 6. os_quit: A function that logs an error and exits the program
+# 7. os: A module that provides a way to interact with the operating system
+# 8. requests: A module that allows you to send HTTP requests
+# 9. sys: A module that provides access to some variables used or maintained by the interpreter and to functions that interact strongly with the interpreter
+# 10. time: A module that provides various time-related functions
 
 def Logger(name="default_log", logger_level="debug"):
     logname = name.split("/")[-1][:-3]
@@ -61,8 +70,8 @@ class CONST:
 
 class Err(IntEnum):
     INPUT_ERROR = 101
-    HTTP_REQUERT_ERR = 103
-    RUN_SYSYBENCH_FAILED = 201
+    HTTP_REQUEST_ERR = 103
+    RUN_SYSBENCH_FAILED = 201
     SET_MYSQL_PARAM_FAILED = 202
     MYSQL_CONNECT_ERR = 301
     MYSQL_EXEC_ERR = 302
@@ -76,12 +85,12 @@ class Err_Detail:
         cls.Desc[err] = desc
 
 
-Err_Detail.add_desc(Err.INPUT_ERROR, "输入错误")
-Err_Detail.add_desc(Err.HTTP_REQUERT_ERR, "链接请求错误")
-Err_Detail.add_desc(Err.RUN_SYSYBENCH_FAILED, "sysbench 压测出现异常")
-Err_Detail.add_desc(Err.SET_MYSQL_PARAM_FAILED, "mysql系统参数设置失败")
-Err_Detail.add_desc(Err.MYSQL_CONNECT_ERR, "mysql 链接错误")
-Err_Detail.add_desc(Err.MYSQL_EXEC_ERR, "输入错误")
+Err_Detail.add_desc(Err.INPUT_ERROR, "Input error")
+Err_Detail.add_desc(Err.HTTP_REQUEST_ERR, "HTTP request error")
+Err_Detail.add_desc(Err.RUN_SYSBENCH_FAILED, "Sysbench benchmarking failed")
+Err_Detail.add_desc(Err.SET_MYSQL_PARAM_FAILED, "Failed to set MySQL parameters")
+Err_Detail.add_desc(Err.MYSQL_CONNECT_ERR, "MySQL connection error")
+Err_Detail.add_desc(Err.MYSQL_EXEC_ERR, "MySQL execution error")
 
 
 def os_quit(err, detail=""):

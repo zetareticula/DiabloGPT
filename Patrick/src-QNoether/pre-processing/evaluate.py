@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-description: Evaluate the Model
-"""
-
 import os
 import sys
 import utils
