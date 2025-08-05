@@ -138,3 +138,20 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Environment
+venv/
+env/
+.env
