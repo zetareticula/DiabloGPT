@@ -2,7 +2,7 @@ import csv
 import pickle
 
 import torch
-from mscn.util import *
+from .util import *
 from torch.utils.data import dataset
 
 

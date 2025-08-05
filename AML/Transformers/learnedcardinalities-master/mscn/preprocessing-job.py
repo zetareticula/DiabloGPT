@@ -101,7 +101,7 @@ def get_col_statistics(cols, data_dir):
         print(col)
         col_materialize = \
         pd.read_csv(data_dir + '/' + alias2table[col.split('.')[0]] + '.csv', quotechar='"', escapechar='\\',
-                    error_bad_lines=False, low_memory=False)[col.split('.')[1]]
+                    on_bad_lines='skip', low_memory=False)[col.split('.')[1]]
         maxs.append(col_materialize.max())
         mins.append(col_materialize.min())
         cards.append(len(col_materialize))
