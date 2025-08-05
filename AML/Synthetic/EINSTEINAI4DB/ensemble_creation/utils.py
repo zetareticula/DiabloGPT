@@ -348,6 +348,63 @@ def handle_aggregation(alias_dict, query, schema, tokens_before_from):
                 query.add_aggregation_operation((AggregationOperationType.PLUS, None, None))
 
 
+def create_random_join(schema, no_relationships):
+    """
+    Creates a random join with the specified number of relationships.
+    
+    Args:
+        schema: The database schema
+        no_relationships: Number of relationships to include in the join
+        
+    Returns:
+        Tuple of (tables, relationships) where tables is a set of table names and 
+        relationships is a set of relationship strings in the format 'table1.column1 = table2.column2'
+    """
+    import random
+    
+    assert no_relationships >= 0, "no_relationships must be greater than or equal to 0"
+    
+    # Start with a random table
+    start_tables = list(schema.tables)
+    random.shuffle(start_tables)
+    start_table_obj = start_tables[0]
+    
+    # Initialize with the starting table
+    merged_tables = {start_table_obj.table_name}
+    relationships = set()
+    
+    for _ in range(no_relationships):
+        possible_next_relationships = []
+        
+        # Find all possible relationships that include one of our current tables
+        # and connect to a table we haven't included yet
+        for rel in schema.relationships:
+            # Skip relationships we've already used
+            if rel.identifier in relationships:
+                continue
+                
+            # Check if this relationship connects to a table we haven't included yet
+            table1, table2 = rel.start, rel.end
+            
+            if (table1 in merged_tables and table2 not in merged_tables):
+                possible_next_relationships.append((rel, table2, False))
+            elif (table2 in merged_tables and table1 not in merged_tables):
+                possible_next_relationships.append((rel, table1, True))
+        
+        # If no more relationships to add, we're done
+        if not possible_next_relationships:
+            break
+            
+        # Randomly select one of the possible relationships
+        rel, new_table, reverse = random.choice(possible_next_relationships)
+        
+        # Add the relationship and the new table
+        relationships.add(rel.identifier)
+        merged_tables.add(new_table)
+    
+    return merged_tables, relationships
+
+
 def save_csv(csv_rows, target_csv_path):
     os.makedirs(os.path.dirname(target_csv_path), exist_ok=True)
     logger.info(f"Saving results to {target_csv_path}")

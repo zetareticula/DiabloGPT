@@ -1,8 +1,18 @@
 import logging
 import numpy as np
-from aml import AQPSPN
-from aml.data_preparation import JoinDataPreparator
-from aml.ensemble import SPNEnsemble
+import sys
+import os
+
+# Add the necessary directories to the Python path
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+sys.path.append(project_root)
+sys.path.append(os.path.join(project_root, 'AML', 'Synthetic', 'EINSTEINAI4DB', 'epigraph'))
+sys.path.append(os.path.join(project_root, 'AML', 'Synthetic', 'EINSTEINAI4DB', 'deep_rl'))
+sys.path.append(os.path.join(project_root, 'AML', 'Transformers', 'deepdb', 'deepdb-forest_power', 'deepdb_job_ranges'))
+
+from aqp_spn.aqp_spn import AQPSPN
+from deep_rl.join_data_preparation import JoinDataPreparator
+from deep_rl.spn_ensemble import SPNEnsemble
 
 
 
