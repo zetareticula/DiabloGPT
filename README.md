@@ -1,10 +1,282 @@
-# DiabloGPT - Pytorch
+<div align="center">
+  <!-- Logo -->
+  <img src="assets/logo.svg" alt="DiabloGPT Logo" width="600">
 
-Query Graph (AI4DB) for Zero-shot learning in the context of <a href="https://arxiv.org/abs/2112.04426">learning transferable features</a> using Zeta Reticula's DiabloGPT. DiabloGPT uses embeddings for columns, tables, and other query components to ensure transferability. We design a feature representation that is independent of the specific schema.
+  <!-- Badges -->
+  <p align="center">
+    <a href="https://www.python.org/">
+      <img src="https://img.shields.io/badge/Python-3.7%2B-blue.svg" alt="Python Version">
+    </a>
+    <a href="https://pytorch.org/">
+      <img src="https://img.shields.io/badge/PyTorch-1.8.0+-EE4C2C.svg" alt="PyTorch Version">
+    </a>
+    <a href="https://github.com/yourusername/DiabloGPT/blob/main/LICENSE">
+      <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
+    </a>
+    <a href="https://github.com/yourusername/DiabloGPT/actions/workflows/tests.yml">
+      <img src="https://github.com/yourusername/DiabloGPT/actions/workflows/tests.yml/badge.svg" alt="Build Status">
+    </a>
+    <a href="https://codecov.io/gh/yourusername/DiabloGPT">
+      <img src="https://codecov.io/gh/yourusername/DiabloGPT/branch/main/graph/badge.svg" alt="Code Coverage">
+    </a>
+    <a href="https://github.com/yourusername/DiabloGPT/commits/main">
+      <img src="https://img.shields.io/github/last-commit/yourusername/DiabloGPT" alt="Last Commit">
+    </a>
+    <a href="https://github.com/yourusername/DiabloGPT/issues">
+      <img src="https://img.shields.io/github/issues/yourusername/DiabloGPT" alt="Open Issues">
+    </a>
+    <a href="https://pypi.org/project/diablogpt-pytorch/">
+      <img src="https://img.shields.io/pypi/dm/diablogpt-pytorch" alt="PyPI Downloads">
+    </a>
+    <a href="https://github.com/psf/black">
+      <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code Style: Black">
+    </a>
+  </p>
+</div>
 
-## DiabloGPT Training Wrapper
+# DiabloGPT - PyTorch Implementation
 
-The aim of the `TrainingWrapper` is to process a folder of text documents into the necessary memmapped numpy arrays to begin training `DIABLOGPT`.
+DiabloGPT is a cutting-edge Query Graph (AI4DB) framework for Zero-shot learning, implementing transferable feature learning as described in the [Learning Transferable Features](https://arxiv.org/abs/2112.04426) paper. It leverages embeddings for database schema components (columns, tables, etc.) to create a feature representation that's independent of specific database schemas.
+
+## Table of Contents
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Architecture](#architecture)
+- [Usage](#usage)
+  - [Training](#training)
+  - [Inference](#inference)
+- [Advanced Configuration](#advanced-configuration)
+- [Contributing](#contributing)
+- [License](#license)
+- [Citation](#citation)
+- [References](#references)
+
+## Features
+
+- **Zero-shot Learning**: Transfer knowledge across different database schemas
+- **Efficient Training**: Optimized for large-scale datasets with memory-mapped arrays
+- **Flexible Architecture**: Configurable model dimensions and attention mechanisms
+- **KNN-based Retrieval**: Efficient nearest neighbor search for context retrieval
+- **PyTorch Native**: Built with PyTorch for seamless integration with the ML ecosystem
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/DiabloGPT.git
+cd DiabloGPT
+
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install package in development mode
+pip install -e .
+```
+
+## Quick Start
+
+```python
+import torch
+from diablogpt_pytorch import DIABLOGPT, TrainingWrapper
+
+# Initialize the model
+diablo_gpt = DIABLOGPT(
+    max_seq_len=2048,
+    enc_dim=896,
+    enc_depth=3,
+    dec_dim=768,
+    dec_depth=12,
+    dec_cross_attn_layers=(1, 3, 6, 9),
+    heads=8,
+    dim_head=64,
+    dec_attn_dropout=0.25,
+    dec_ff_dropout=0.25
+).cuda()
+
+# Set up the training wrapper
+wrapper = TrainingWrapper(
+    diablogpt=diablo_gpt,
+    knn=2,
+    chunk_size=64,
+    documents_path='./text_folder',
+    # ... other parameters
+)
+
+# Start training
+train_dl = iter(wrapper.get_dataloader(batch_size=2, shuffle=True))
+optim = wrapper.get_optimizer(lr=3e-4, wd=0.01)
+```
+
+## Architecture
+
+DiabloGPT is built on a transformer-based architecture with the following key components:
+
+1. **Encoder**: Processes the input sequence to create contextualized representations
+2. **Decoder**: Generates output sequences using cross-attention with retrieved chunks
+3. **Retrieval Mechanism**: Efficient KNN-based retrieval of relevant context chunks
+4. **Memory Mapped Data**: Handles large datasets through memory-mapped arrays
+
+The model uses a combination of self-attention and cross-attention mechanisms to effectively incorporate retrieved context while generating predictions.
+
+## Usage
+
+### Training
+
+The `TrainingWrapper` simplifies the process of training DiabloGPT on your dataset. Here's how to use it:
+
+```python
+import torch
+from diablogpt_pytorch import DIABLOGPT, TrainingWrapper
+
+# Initialize the model
+diablo_gpt = DIABLOGPT(
+    max_seq_len=2048,
+    enc_dim=896,
+    enc_depth=3,
+    dec_dim=768,
+    dec_depth=12,
+    dec_cross_attn_layers=(1, 3, 6, 9),
+    heads=8,
+    dim_head=64,
+    dec_attn_dropout=0.25,
+    dec_ff_dropout=0.25
+).cuda()
+
+# Set up the training wrapper
+wrapper = TrainingWrapper(
+    diablogpt=diablo_gpt,
+    knn=2,                                      # Number of nearest neighbors to retrieve
+    chunk_size=64,                             # Size of each chunk
+    documents_path='./your_text_data',         # Path to text documents
+    glob='**/*.txt',                           # File pattern to match
+    chunks_memmap_path='./train.chunks.dat',   # Path to store chunk data
+    seqs_memmap_path='./train.seq.dat',        # Path to store sequence data
+    doc_ids_memmap_path='./train.doc_ids.dat', # Path to store document IDs
+    max_chunks=1_000_000,                     # Maximum number of chunks
+    max_seqs=100_000,                         # Maximum number of sequences
+    knn_extra_neighbors=100,                  # Extra neighbors to fetch
+    max_index_memory_usage='100m',            # Maximum memory for index
+    current_memory_available='1G'             # Available memory for processing
+)
+
+# Get data loader and optimizer
+train_dl = iter(wrapper.get_dataloader(batch_size=2, shuffle=True))
+optim = wrapper.get_optimizer(lr=3e-4, wd=0.01)
+
+# Training loop
+for step in range(1000):
+    # Get batch
+    seq, retrieved = map(lambda t: t.cuda(), next(train_dl))
+    
+    # Forward pass
+    loss = diablo_gpt(seq, retrieved, return_loss=True)
+    
+    # Backward pass and optimize
+    loss.backward()
+    optim.step()
+    optim.zero_grad()
+    
+    # Print training progress
+    if step % 100 == 0:
+        print(f"Step {step}: Loss = {loss.item():.4f}")
+```
+
+### Inference
+
+Generate text with the trained model:
+
+```python
+# Generate text with top-k sampling
+sampled = wrapper.generate(
+    filter_thres=0.9,    # Filter out low probability tokens
+    temperature=1.0,     # Sampling temperature
+    max_length=1024      # Maximum sequence length
+)
+
+# Or generate with a prompt
+prompt = torch.randint(0, 1000, (1, 128)).cuda()  # Example prompt
+sampled = wrapper.generate(
+    prompt=prompt,
+    filter_thres=0.9,
+    temperature=1.0,
+    max_length=1024
+)
+```
+
+## Advanced Configuration
+
+### Model Architecture
+
+DiabloGPT provides several configuration options to customize the model architecture:
+
+- `max_seq_len`: Maximum sequence length (default: 2048)
+- `enc_dim`: Encoder dimension (default: 896)
+- `enc_depth`: Number of encoder layers (default: 3)
+- `dec_dim`: Decoder dimension (default: 768)
+- `dec_depth`: Number of decoder layers (default: 12)
+- `dec_cross_attn_layers`: Indices of decoder layers to use cross-attention (default: (1, 3, 6, 9))
+- `heads`: Number of attention heads (default: 8)
+- `dim_head`: Dimension per head (default: 64)
+- `dec_attn_dropout`: Dropout rate for attention (default: 0.25)
+- `dec_ff_dropout`: Dropout rate for feed-forward layers (default: 0.25)
+
+### Training Parameters
+
+Key training parameters you might want to adjust:
+
+- `knn`: Number of nearest neighbors to retrieve (default: 2)
+- `chunk_size`: Size of each chunk (default: 64)
+- `max_chunks`: Maximum number of chunks to process (default: 1,000,000)
+- `max_seqs`: Maximum number of sequences (default: 100,000)
+- `knn_extra_neighbors`: Extra neighbors to fetch (default: 100)
+- `batch_size`: Training batch size (default: 2)
+- `learning_rate`: Learning rate (default: 3e-4)
+- `weight_decay`: Weight decay (default: 0.01)
+
+## Contributing
+
+We welcome contributions to DiabloGPT! Here's how you can help:
+
+1. **Report Bugs**: Open an issue to report any bugs or unexpected behavior
+2. **Feature Requests**: Suggest new features or improvements
+3. **Code Contributions**: Submit pull requests with bug fixes or new features
+4. **Documentation**: Help improve the documentation
+5. **Examples**: Add more usage examples or tutorials
+
+Please read our [Contributing Guidelines](CONTRIBUTING.md) for more details.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Citation
+
+If you use DiabloGPT in your research, please cite our paper:
+
+```bibtex
+@misc{diablogpt2023,
+  title={DiabloGPT: Query Graph for Zero-shot Learning with Transferable Features},
+  author={Zeta Reticula},
+  year={2023},
+  publisher={GitHub},
+  howpublished={\url{https://github.com/yourusername/DiabloGPT}},
+}
+```
+
+## References
+
+1. [Learning Transferable Features](https://arxiv.org/abs/2112.04426)
+2. [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+3. [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401)
+
+## Support
+
+For questions or support, please open an issue on our [GitHub repository](https://github.com/yourusername/DiabloGPT/issues).
 
 ```python
 import torch

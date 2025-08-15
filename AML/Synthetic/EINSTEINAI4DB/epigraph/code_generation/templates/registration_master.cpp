@@ -1,1 +1,0 @@
-    m.def("FACE{spn_id}", &FACE{spn_id}, "Generate expectation on FACE", py::arg("relevantScope"), py::arg("featureScope"), {passed_params});
